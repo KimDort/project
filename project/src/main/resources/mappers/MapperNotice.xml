@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.notice">
+	<!-- oracle -->
+	<!-- <insert id="insertNotice">
+		INSERT INTO NOTICE(NNO, TITLE, CONTENT, WRITER,
+		REGDATE, STARTDAY, ENDDAY, STRONG, CLOSED, DELETED,FILE1, SIZE1,
+		THUMB)
+		VALUES((SELECT NVL(MAX(NNO),0)+1 AS NNO FROM NOTICE), #{title},
+		#{content}, #{writer},
+		sysdate,#{startday},#{endday},#{strong},#{closed}, #{deleted},
+		#{file1}, #{size1},#{thumb})
+	</insert>
+
+	<select id="list" resultType="NoticeVO">
+		SELECT NNO, TITLE, CONTENT, WRITER, REGDATE, READCOUNT, R, NICK,
+		FILE1, SIZE1, THUMB, STRONG, CLOSED, DELETED
+		FROM
+		(SELECT NNO, TITLE,
+		CONTENT, WRITER, REGDATE, READCOUNT, ROWNUM AS R,
+		NICK, FILE1, SIZE1,
+		THUMB,
+		STRONG, CLOSED, DELETED
+		FROM
+		(SELECT NOTICE.NNO, NOTICE.TITLE,
+		NOTICE.CONTENT,
+		NOTICE.WRITER,NOTICE.REGDATE, NOTICE.READCOUNT,
+		MEMBER.NICKNAME AS NICK, MEMBER.ID,NOTICE.FILE1, NOTICE.SIZE1,
+		NOTICE.THUMB,
+		NOTICE.STRONG, NOTICE.CLOSED, NOTICE.DELETED FROM
+		NOTICE,
+		MEMBER WHERE NOTICE.NNO > 0 AND NOTICE.WRITER = MEMBER.ID ORDER BY
+		NOTICE.NNO DESC)
+		)WHERE<![CDATA[ R >=#{pageStart} AND R<=#{pageEnd}]]>
+	</select>
+	<select id="countPaging" resultType="int">
+    <![CDATA[
+      SELECT COUNT(NNO) FROM NOTICE WHERE NNO > 0
+    ]]>
+	</select>
+	공지사항 강조부분 가져오기
+	<select id="selectStrong" resultType="NoticeVO">
+		SELECT NNO, STRONG, CLOSED,
+		DELETED, TITLE, CONTENT, THUMB, R, DISPLAY FROM
+		(SELECT NNO, STRONG,
+		CLOSED, DELETED,
+		ROWNUM AS R, TITLE, CONTENT, THUMB AS THUMB ,DISPLAY
+		FROM NOTICE
+		WHERE STRONG='Y' ORDER BY NNO DESC)WHERE 4>R
+	</select>
+	공지사항 일반 부분 가져오기
+	<select id="mainList" resultType="NoticeVO">
+		SELECT NNO, TITLE, CONTENT,
+		THUMB, STRONG, CLOSED, DELETED, DISPLAY, R FROM
+		(SELECT NNO, TITLE,
+		CONTENT, THUMB, STRONG, CLOSED, DELETED, DISPLAY,
+		ROWNUM AS R
+		FROM
+		NOTICE WHERE STRONG !='Y' ORDER BY NNO DESC)WHERE 5>R
+	</select>
+	<select id="read" resultType="NoticeVO">
+		SELECT * FROM NOTICE WHERE
+		NNO=#{nno}
+	</select>
+
+	<select id="allList" resultType="NoticeVO">
+		SELECT * FROM NOTICE
+	</select>
+
+	display 여부 업데이트
+	<update id="display">
+		UPDATE NOTICE SET DISPLAY=#{display} WHERE NNO=#{nno}
+	</update>
+	강조여부 업데이트
+	<update id="strong">
+		UPDATE NOTICE SET STRONG=#{strong} WHERE NNO=#{nno}
+	</update>
+	데이터 삭제
+	<delete id="noticeDelete">
+		DELETE FROM NOTICE WHERE NNO=#{nno}
+	</delete> -->
+	
+	<!-- mysql -->
+	<select id="maxNum" resultType="int">
+	SELECT IFNULL(MAX(NNO),0)+1 AS nno FROM NOTICE
+	</select>
+	<insert id="insertNotice">
+		INSERT INTO NOTICE(nno, title, content, writer,
+		regdate, statrday, endday, strong, closed, deleted,file1, size1,
+		thumb)
+		VALUES(#{nno}, #{title},
+		#{content}, #{writer},
+		now(),#{startday},#{endday},#{strong},#{closed}, #{deleted},
+		#{file1}, #{size1},#{thumb})
+	</insert>
+	<!-- 공지사항 강조부분 가져오기 -->
+	<select id="selectStrong" resultType="NoticeVO">
+		SELECT NOTICE.* FROM 
+		(SELECT @R:=@R+1 AS R,NOTICE.* FROM NOTICE,
+		(SELECT @R:=0)R WHERE strong='Y' ORDER BY nno DESC)NOTICE LIMIT 4
+	</select>
+	<!-- 공지사항 일반 부분 가져오기 -->
+	<select id="mainList" resultType="NoticeVO">
+		SELECT NOTICE.* FROM 
+		(SELECT @R:=@R+1 AS R,NOTICE.* FROM NOTICE,
+		(SELECT @R:=0)R WHERE strong!='Y' ORDER BY nno DESC)NOTICE LIMIT 4
+	</select>
+	<select id="read" resultType="NoticeVO">
+		SELECT * FROM NOTICE WHERE
+		nno=#{nno}
+	</select>
+
+	<select id="allList" resultType="NoticeVO">
+		SELECT * FROM NOTICE ORDER BY nno DESC
+	</select>
+
+	<!-- display 여부 업데이트 -->
+	<update id="display">
+		UPDATE NOTICE SET DISPLAY=#{display} WHERE NNO=#{nno}
+	</update>
+	<!-- 강조여부 업데이트 -->
+	<update id="strong">
+		UPDATE NOTICE SET STRONG=#{strong} WHERE NNO=#{nno}
+	</update>
+	<!-- 데이터 삭제 -->
+	<delete id="noticeDelete">
+		DELETE FROM NOTICE WHERE NNO=#{nno}
+	</delete>
+</mapper>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+  xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+  xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.1.xsd
+		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd">
+
+  <!-- Root Context: defines shared resources visible to all other web components -->
+  <!-- Oracle -->
+  <!-- <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+    <property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy" />
+    <property name="url" value="jdbc:log4jdbc:oracle:thin:@localhost:1521:XE" />
+    <property name="username" value="user_1" />
+    <property name="password" value="1234" />
+  </bean> -->
+  
+  <!-- MySQL: & → ＆amp; 엔티티로 변경 -->
+  <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource"> 
+  <property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"/> 
+  <property name="url" value="jdbc:mysql://localhost:3306/project"/> 
+  <property name="username" value="root" /> 
+  <property name="password" value="cjsekd13"/> 
+  </bean>
+
+  <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+    <property name="dataSource" ref="dataSource" />
+    <!-- 아래부분은 매핑할 xml파일이 있는 패키지경로를 설정한다. -->
+    <property name="configLocation" value="classpath:/mybatis-config.xml"/>
+    <property name="mapperLocations" value="classpath:mappers/Mapper*.xml" />
+  </bean>
+
+  <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+    <constructor-arg ref="sqlSessionFactory" />
+  </bean>
+  <!-- Mail Seting -->
+  <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+    <property name="host" value="smtp.gmail.com"/>
+    <property name="port" value="587"/>
+    <property name="username" value="projectconfirmtest@gmail.com"/>
+    <property name="password" value="gksmf2dkfo1"/>
+    <property name="javaMailProperties">
+      <props>
+        <prop key="mail.smtp.auth">true</prop>
+        <prop key="mail.smtp.starttls.enable">true</prop>
+      </props>
+    </property>
+  </bean>
+  <context:component-scan base-package="com.project.service"></context:component-scan>
+  <context:component-scan base-package="com.project.dao"></context:component-scan>
+  
+</beans>

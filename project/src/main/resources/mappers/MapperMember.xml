@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.member">
+<!-- oracle sql -->
+<!-- <insert id="create" parameterType="MemberVO" >
+    INSERT INTO MEMBER(
+    id, mno, password, name,
+    nickname, phone,
+    zipcode, address1, address2,
+    auth,regdate,file1, size1, thumb)
+    VALUES(
+    #{id}, (SELECT NVL(MAX(mno), 0)+1 as mno FROM MEMBER),#{password}, #{name}, #{nickname},
+    #{phone}, #{zipcode}, #{address1}, #{address2}, #{auth},now(), #{file1}, #{size1}, #{thumb})
+  </insert> -->
+<!-- mysql sql -->
+
+	<select id="maxNum" resultType="int">
+		SELECT IFNULL(MAX(MNO),0)+1 AS MNO FROM MEMBER
+	</select>
+  <insert id="create" parameterType="MemberVO" >
+    INSERT INTO MEMBER(
+    id, mno, password, name,
+    nickname, phone,
+    zipcode, address1, address2,
+    auth,regdate,file1, size1, thumb)
+    VALUES(
+    #{id}, (select IFNULL(MAX(th.mno),0)+1 from MEMBER as th),#{password}, #{name}, #{nickname},
+    #{phone}, #{zipcode}, #{address1}, #{address2}, #{auth},now(), #{file1}, #{size1}, #{thumb})
+  </insert>
+  <update id="confrim" parameterType="MemberVO">
+    UPDATE MEMBER SET CONFIRM ='Y' WHERE ID=#{id} and AUTH=#{auth} and AUTH2=#{auth2}
+  </update>
+  
+  <update id="confirm2" parameterType="MemberVO">
+  	UPDATE MEMBER SET AUTH2=#{auth2} WHERE ID=#{id}
+  </update>
+  <select id="login" resultType="int" parameterType="MemberVO">
+    SELECT COUNT(mno) as cnt
+    FROM MEMBER
+    WHERE id=#{id} AND password=#{password}
+  </select>
+  <select id="userinfo" resultType="MemberVO">
+    SELECT * FROM MEMBER WHERE ID=#{id}
+  </select>
+  <select id="selectuser" resultType="MemberVO">
+  	SELECT * FROM MEMBER WHERE mno=#{mno}
+  </select>
+  <select id="listAll" resultType="MemberVO">
+  	SELECT * FROM MEMBER ORDER BY MNO DESC
+  </select>
+  
+  <select id="checkId" resultType="int">
+  	SELECT COUNT(id) FROM MEMBER WHERE id=#{id}
+  </select>
+</mapper>

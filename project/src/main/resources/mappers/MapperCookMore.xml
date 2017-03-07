@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.cookmore">
+	<!-- mysql -->
+	<insert id="insertCookmore" parameterType="CookMoreThingVO">
+		INSERT INTO CookMoreThing(mno, cno, sno)
+		VALUES((select IFNULL(MAX(th.mno),0)+1 from CookMoreThing as th), #{cno}, #{sno})
+	</insert>
+	<select id="selectcno" resultType="int">
+		SELECT MAX(cno) FROM COOK
+	</select>
+	<select id="selectlist" resultType="CookMoreThingVO">
+		SELECT * FROM CookMoreThing WHERE cno=#{cno}
+	</select>
+	
+	<delete id="delete">
+		DELETE FROM CookMoreThing WHERE cno=#{cno}
+	</delete>
+</mapper>

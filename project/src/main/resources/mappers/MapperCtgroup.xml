@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.ctgroup">
+	<!-- oracle -->
+	<!-- <insert id="insertthing">
+		INSERT INTO thing(tno, TITLE, CONTENT, WRITER,
+		REGDATE, STARTDAY, ENDDAY, STRONG, CLOSED, DELETED,FILE1, SIZE1,
+		THUMB)
+		VALUES((SELECT NVL(MAX(tno),0)+1 AS tno FROM thing), #{title},
+		#{content}, #{writer},
+		sysdate,#{startday},#{endday},#{strong},#{closed}, #{deleted},
+		#{file1}, #{size1},#{thumb})
+	</insert>
+
+	<select id="list" resultType="thingVO">
+		SELECT tno, TITLE, CONTENT, WRITER, REGDATE, READCOUNT, R, NICK,
+		FILE1, SIZE1, THUMB, STRONG, CLOSED, DELETED
+		FROM
+		(SELECT tno, TITLE,
+		CONTENT, WRITER, REGDATE, READCOUNT, ROWNUM AS R,
+		NICK, FILE1, SIZE1,
+		THUMB,
+		STRONG, CLOSED, DELETED
+		FROM
+		(SELECT thing.tno, thing.TITLE,
+		thing.CONTENT,
+		thing.WRITER,thing.REGDATE, thing.READCOUNT,
+		MEMBER.NICKNAME AS NICK, MEMBER.ID,thing.FILE1, thing.SIZE1,
+		thing.THUMB,
+		thing.STRONG, thing.CLOSED, thing.DELETED FROM
+		thing,
+		MEMBER WHERE thing.tno > 0 AND thing.WRITER = MEMBER.ID ORDER BY
+		thing.tno DESC)
+		)WHERE<![CDATA[ R >=#{pageStart} AND R<=#{pageEnd}]]>
+	</select>
+	<select id="countPaging" resultType="int">
+    <![CDATA[
+      SELECT COUNT(tno) FROM thing WHERE tno > 0
+    ]]>
+	</select>
+	공지사항 강조부분 가져오기
+	<select id="selectStrong" resultType="thingVO">
+		SELECT tno, STRONG, CLOSED,
+		DELETED, TITLE, CONTENT, THUMB, R, DISPLAY FROM
+		(SELECT tno, STRONG,
+		CLOSED, DELETED,
+		ROWNUM AS R, TITLE, CONTENT, THUMB AS THUMB ,DISPLAY
+		FROM thing
+		WHERE STRONG='Y' ORDER BY tno DESC)WHERE 4>R
+	</select>
+	공지사항 일반 부분 가져오기
+	<select id="mainList" resultType="thingVO">
+		SELECT tno, TITLE, CONTENT,
+		THUMB, STRONG, CLOSED, DELETED, DISPLAY, R FROM
+		(SELECT tno, TITLE,
+		CONTENT, THUMB, STRONG, CLOSED, DELETED, DISPLAY,
+		ROWNUM AS R
+		FROM
+		thing WHERE STRONG !='Y' ORDER BY tno DESC)WHERE 5>R
+	</select>
+	<select id="read" resultType="thingVO">
+		SELECT * FROM thing WHERE
+		tno=#{tno}
+	</select>
+
+	<select id="allList" resultType="thingVO">
+		SELECT * FROM thing;
+	</select>
+
+	display 여부 업데이트
+	<update id="display">
+		UPDATE thing SET DISPLAY=#{display} WHERE tno=#{tno}
+	</update>
+	강조여부 업데이트
+	<update id="strong">
+		UPDATE thing SET STRONG=#{strong} WHERE tno=#{tno}
+	</update>
+	데이터 삭제
+	<delete id="thingDelete">
+		DELETE FROM thing WHERE tno=#{tno}
+	</delete> -->
+	
+	<!-- mysql -->
+	<select id="alllist" resultType="CtgroupVO">
+		SELECT * FROM ctgroup
+	</select>
+	
+	<select id="onelist" resultType="CtgroupVO">
+		SELECT * FROM ctgroup WHERE ctgroup=#{ctgroup}
+	</select>
+</mapper>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.address">	
+	<!-- mysql -->
+	<select id="SearchAddress" resultType="AddressVO" parameterType="AddressVO">   	
+   	select distinct A.BaseAreaNo as zipcode, concat(B.City,' ', B.Citied,' ',IF(B.IsEupMyun='0', '', concat('',B.EupMyun,'')),' ',
+   	B.Street,A.BuildingOriNo, CASE WHEN A.BuildingSecNo='0' THEN '' ELSE concat('-',A.BuildingSecNo) END,
+			if(D.CitiedBuilding='','',concat(' (',D.CitiedBuilding,')'))) as address1
+   	from address_optioninfo as D, address_info as A, address_streecode as B   
+   	WHERE B.StreetCode = A.StreetCode AND B.EupMyunDongNo = A.EupMyunDongNo  AND A.AdminNo = D.AdminNo 
+  	AND B.Citied LIKE concat(#{citied}, '%')
+  	AND B.Street LIKE concat(#{street}, '%')   	
+	</select>
+</mapper>

@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.thing">
+	<!-- oracle -->
+	<!-- <insert id="insertthing">
+		INSERT INTO thing(tno, TITLE, CONTENT, WRITER,
+		REGDATE, STARTDAY, ENDDAY, STRONG, CLOSED, DELETED,FILE1, SIZE1,
+		THUMB)
+		VALUES((SELECT NVL(MAX(tno),0)+1 AS tno FROM thing), #{title},
+		#{content}, #{writer},
+		sysdate,#{startday},#{endday},#{strong},#{closed}, #{deleted},
+		#{file1}, #{size1},#{thumb})
+	</insert>
+
+	<select id="list" resultType="thingVO">
+		SELECT tno, TITLE, CONTENT, WRITER, REGDATE, READCOUNT, R, NICK,
+		FILE1, SIZE1, THUMB, STRONG, CLOSED, DELETED
+		FROM
+		(SELECT tno, TITLE,
+		CONTENT, WRITER, REGDATE, READCOUNT, ROWNUM AS R,
+		NICK, FILE1, SIZE1,
+		THUMB,
+		STRONG, CLOSED, DELETED
+		FROM
+		(SELECT thing.tno, thing.TITLE,
+		thing.CONTENT,
+		thing.WRITER,thing.REGDATE, thing.READCOUNT,
+		MEMBER.NICKNAME AS NICK, MEMBER.ID,thing.FILE1, thing.SIZE1,
+		thing.THUMB,
+		thing.STRONG, thing.CLOSED, thing.DELETED FROM
+		thing,
+		MEMBER WHERE thing.tno > 0 AND thing.WRITER = MEMBER.ID ORDER BY
+		thing.tno DESC)
+		)WHERE<![CDATA[ R >=#{pageStart} AND R<=#{pageEnd}]]>
+	</select>
+	<select id="countPaging" resultType="int">
+    <![CDATA[
+      SELECT COUNT(tno) FROM thing WHERE tno > 0
+    ]]>
+	</select>
+	공지사항 강조부분 가져오기
+	<select id="selectStrong" resultType="thingVO">
+		SELECT tno, STRONG, CLOSED,
+		DELETED, TITLE, CONTENT, THUMB, R, DISPLAY FROM
+		(SELECT tno, STRONG,
+		CLOSED, DELETED,
+		ROWNUM AS R, TITLE, CONTENT, THUMB AS THUMB ,DISPLAY
+		FROM thing
+		WHERE STRONG='Y' ORDER BY tno DESC)WHERE 4>R
+	</select>
+	공지사항 일반 부분 가져오기
+	<select id="mainList" resultType="thingVO">
+		SELECT tno, TITLE, CONTENT,
+		THUMB, STRONG, CLOSED, DELETED, DISPLAY, R FROM
+		(SELECT tno, TITLE,
+		CONTENT, THUMB, STRONG, CLOSED, DELETED, DISPLAY,
+		ROWNUM AS R
+		FROM
+		thing WHERE STRONG !='Y' ORDER BY tno DESC)WHERE 5>R
+	</select>
+	<select id="read" resultType="thingVO">
+		SELECT * FROM thing WHERE
+		tno=#{tno}
+	</select>
+
+	<select id="allList" resultType="thingVO">
+		SELECT * FROM thing
+	</select>
+
+	display 여부 업데이트
+	<update id="display">
+		UPDATE thing SET DISPLAY=#{display} WHERE tno=#{tno}
+	</update>
+	강조여부 업데이트
+	<update id="strong">
+		UPDATE thing SET STRONG=#{strong} WHERE tno=#{tno}
+	</update>
+	데이터 삭제
+	<delete id="thingDelete">
+		DELETE FROM thing WHERE tno=#{tno}
+	</delete> -->
+	
+	<!-- mysql -->
+	<select id="totalCount" resultType="int">
+	SELECT count(*) FROM thing
+	</select>
+	<insert id="insertThing">
+		INSERT INTO thing(tno, ctgroup,category, name, stock, company, country, buycost, sellcost, file1, size1, thumb)
+		VALUES((select IFNULL(MAX(th.tno),0)+1 from thing as th), 
+		#{ctgroup},#{category}, #{name}, #{stock}, #{company}, #{country}, #{buycost}, #{sellcost}, #{file1}, #{size1}, #{thumb})
+	</insert>
+	
+	<select id="read" resultType="ThingVO">
+		SELECT * FROM thing WHERE
+		tno=#{tno}
+	</select>
+
+	<select id="allList" resultType="ThingVO">
+		SELECT * FROM thing ORDER BY tno DESC
+	</select>
+
+	<!-- 데이터 삭제 -->
+	<delete id="thingDelete">
+		DELETE FROM thing WHERE tno=#{tno}
+	</delete>
+	<!-- Category Group Select -->
+	<select id="ctgroup" resultType="CtgroupVO">
+		select * from ctgroup order by name desc
+	</select>
+	<!-- Category Select -->
+	<select id="categoryselect" resultType="CategoryVO">
+		select * from category where ctgroup=#{ctgroup} order by ctno desc
+	</select>
+	<!-- Categroy Group Insert -->
+	<insert id="insertCtgroup">
+		insert into ctgroup values((select IFNULL(MAX(ct.ctgroup),0)+1 from ctgroup as ct),#{name} )
+	</insert>
+	
+	<!-- Category Item Insert -->
+	<insert id="insertCategory">
+		INSERT INTO category VALUES((select IFNULL(MAX(ct.ctno),0)+1 from category as ct), #{ctname}, #{ctgroup}, 0)
+	</insert>
+	
+	<!-- Category Item Delete -->
+	<delete id="deleteCategory">
+		DELETE FROM category WHERE CTNO=#{ctno}
+	</delete>
+	
+	<!-- Category Group Delete -->
+	<delete id="deleteCtgroup">
+		DELETE FROM ctgroup WHERE CTGROUP=#{ctgroup}
+	</delete>
+	
+	<!-- Category All List -->
+	<select id="categoryAllList" resultType="CategoryVO">
+		SELECT * FROM category
+	</select>
+	
+	<!-- select cost -->
+	<select id="selectInfo" resultType="ThingVO">
+		SELECT * FROM thing WHERE CTGROUP=#{ctgroup} and CATEGORY=#{ctno}
+	</select>
+	
+	<!-- 페이징처리 -->
+	<select id="listPage" resultType="ThingVO">
+	 <![CDATA[
+	 	SELECT * FROM thing WHERE tno > 0	 	
+	 ]]>		 
+	 
+	 <if test="ctgroup != 0">
+	 	AND ctgroup=#{ctgroup}	
+	 </if>
+	 <if test="category != 0">
+	 	AND ctgroup=#{ctgroup} AND category=#{category}
+	 </if>
+	 
+	 <![CDATA[
+	 	order by tno desc limit #{pageStart}, #{perPageNum}
+	 ]]>
+	</select>
+	<select id="countPaging" resultType="int">
+		<![CDATA[
+			SELECT count(tno) FROM thing WHERE tno > 0
+		]]>	
+	</select>
+	<update id="ThingUpdate">
+		UPDATE thing SET 
+			ctgroup =#{ctgroup}, category=#{category}, name=#{name}, stock=#{stock},
+			company=#{company}, country=#{country}, buycost=#{buycost}, sellcost=#{sellcost},
+			file1=#{file1}, size1=#{size1}, thumb=#{thumb}
+		WHERE tno=#{tno}		
+	</update>
+	<delete id="ThingDelete">
+		DELETE FROM thing
+		WHERE tno=#{tno}
+	</delete>
+</mapper>

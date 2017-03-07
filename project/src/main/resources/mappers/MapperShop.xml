@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.shop">
+	<!-- oracle -->
+	<!-- <insert id="insertCOOK">
+		INSERT INTO COOK(CNO, TITLE, CONTENT, WRITER,
+		REGDATE, STARTDAY, ENDDAY, STRONG, CLOSED, DELETED,FILE1, SIZE1,
+		THUMB)
+		VALUES((SELECT NVL(MAX(CNO),0)+1 AS CNO FROM COOK), #{title},
+		#{content}, #{writer},
+		sysdate,#{startday},#{endday},#{strong},#{closed}, #{deleted},
+		#{file1}, #{size1},#{thumb})
+	</insert>
+
+	<select id="list" resultType="COOKVO">
+		SELECT CNO, TITLE, CONTENT, WRITER, REGDATE, READCOUNT, R, NICK,
+		FILE1, SIZE1, THUMB, STRONG, CLOSED, DELETED
+		FROM
+		(SELECT CNO, TITLE,
+		CONTENT, WRITER, REGDATE, READCOUNT, ROWNUM AS R,
+		NICK, FILE1, SIZE1,
+		THUMB,
+		STRONG, CLOSED, DELETED
+		FROM
+		(SELECT COOK.CNO, COOK.TITLE,
+		COOK.CONTENT,
+		COOK.WRITER,COOK.REGDATE, COOK.READCOUNT,
+		MEMBER.NICKNAME AS NICK, MEMBER.ID,COOK.FILE1, COOK.SIZE1,
+		COOK.THUMB,
+		COOK.STRONG, COOK.CLOSED, COOK.DELETED FROM
+		COOK,
+		MEMBER WHERE COOK.CNO > 0 AND COOK.WRITER = MEMBER.ID ORDER BY
+		COOK.CNO DESC)
+		)WHERE<![CDATA[ R >=#{pageStart} AND R<=#{pageEnd}]]>
+	</select>
+	<select id="countPaging" resultType="int">
+    <![CDATA[
+      SELECT COUNT(CNO) FROM COOK WHERE CNO > 0
+    ]]>
+	</select>
+	공지사항 강조부분 가져오기
+	<select id="selectStrong" resultType="COOKVO">
+		SELECT CNO, STRONG, CLOSED,
+		DELETED, TITLE, CONTENT, THUMB, R, DISPLAY FROM
+		(SELECT CNO, STRONG,
+		CLOSED, DELETED,
+		ROWNUM AS R, TITLE, CONTENT, THUMB AS THUMB ,DISPLAY
+		FROM COOK
+		WHERE STRONG='Y' ORDER BY CNO DESC)WHERE 4>R
+	</select>
+	공지사항 일반 부분 가져오기
+	<select id="mainList" resultType="COOKVO">
+		SELECT CNO, TITLE, CONTENT,
+		THUMB, STRONG, CLOSED, DELETED, DISPLAY, R FROM
+		(SELECT CNO, TITLE,
+		CONTENT, THUMB, STRONG, CLOSED, DELETED, DISPLAY,
+		ROWNUM AS R
+		FROM
+		COOK WHERE STRONG !='Y' ORDER BY CNO DESC)WHERE 5>R
+	</select>
+	<select id="read" resultType="COOKVO">
+		SELECT * FROM COOK WHERE
+		CNO=#{CNO}
+	</select>
+
+	<select id="allList" resultType="COOKVO">
+		SELECT * FROM COOK
+	</select>
+
+	display 여부 업데이트
+	<update id="display">
+		UPDATE COOK SET DISPLAY=#{display} WHERE CNO=#{CNO}
+	</update>
+	강조여부 업데이트
+	<update id="strong">
+		UPDATE COOK SET STRONG=#{strong} WHERE CNO=#{CNO}
+	</update>
+	데이터 삭제
+	<delete id="COOKDelete">
+		DELETE FROM COOK WHERE CNO=#{CNO}
+	</delete> -->
+	
+	<!-- mysql -->
+	<select id="maxNum" resultType="int">
+		SELECT IFNULL(MAX(cno),0)+1 AS sno FROM SHOP
+	</select>
+	<insert id="insertShop">
+		INSERT INTO SHOP(sno, tno,bname,title, content, writer,
+		regdate,startday, endday, salecost ,strong, closed, deleted, display, sale, file1, cost)
+		VALUES((select IFNULL(MAX(th.sno),0)+1 from SHOP as th),#{tno}, 'SHOP', #{title}, #{content}, #{writer}, now(),
+		#{startDay},#{endDay}, #{salecost},
+		#{strong},#{closed}, #{deleted}, #{display}, #{sale}, #{file1}, #{cost})
+	</insert>
+	
+	<select id="allList" resultType="ShopVO">
+		SELECT * FROM SHOP ORDER BY sno DESC
+	</select>
+	<select id="read" resultType="ShopVO">
+		SELECT * FROM SHOP WHERE sno=#{sno}
+	</select>
+	<insert id="insertOrder" parameterType="ShopOrderCompleteVO">
+		INSERT INTO shoporder(ono, ordernum, orderer, bankname, bank, tno, sno, cost, orderstock, 
+		usepoint, totalcost, zipcode, address1, address2, phone, method, orderdate) 
+		VALUES((select IFNULL(MAX(th.ono),0)+1 from shoporder as th), #{ordernum}, #{orderer}, #{bankname}, #{bank},
+		#{tno}, #{sno}, #{cost}, #{orderstock}, #{usepoint},
+		#{totalcost}, #{zipcode}, #{address1}, #{address2}, #{phone}, #{method}, ${orderdate})
+	</insert>
+	
+	<delete id="cancelOrder" parameterType="ShopOrderCompleteVO">
+		DELETE FROM shoporder WHERE mno=#{mno} and tno=#{tno} and ordernum=#{ordernum}
+	</delete>
+	<select id="ordernumSelect" parameterType="ShopOrderCompleteVO">
+		SELECT * FROM shoporder WHERE mno=#{mno} and ordernum=#{ordernum}
+	</select>
+	<!-- 페이징처리 -->
+	<select id="listPage" resultType="ShopVO">
+	 <![CDATA[
+	 	SELECT * FROM SHOP WHERE sno > 0
+	 	order by sno desc limit #{pageStart}, #{perPageNum}
+	 ]]>		 
+	</select>
+	<select id="countPaging" resultType="int">
+		<![CDATA[
+			SELECT count(sno) FROM SHOP WHERE sno > 0
+		]]>	
+	</select>
+	
+	<delete id="ShopDelete">
+		DELETE FROM SHOP WHERE sno=#{sno}
+	</delete>
+	
+	<update id="ShopUpdate">
+		UPDATE SHOP SET 
+		tno=#{tno}, title=#{title}, content=#{content}, startday=#{startday}, endday=#{endday},
+		cost=#{cost}, salecost=#{salecost}, strong=#{strong}, st_begin=#{st_begin}, st_day=#{st_day}, closed=#{closed}, clo_begin=#{clo_begin},
+		clo_end=#{clo_end}, clo_day=#{clo_day}, deleted=#{deleted}, del_begin=#{del_begin}, del_end=#{del_end}, del_day=#{del_day},
+		sale=#{sale}, sale_begin=#{sale_begin}, sale_end=#{sale_end}, sale_day=#{sale_day}, display=#{display}, file1=#{file1},
+		size1=#{size1}, thumb=#{thumb} 
+		WHERE sno=#{sno}
+	</update>
+</mapper>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.event">
+	<!-- oracle sql -->
+	<!-- <insert id="insertEvent" parameterType="com.project.vo.EventVO">
+		INSERT INTO EVENT(ENO, BNAME, TITLE, CONTENT, WRITER, REGDATE, STARTDAY,
+		ENDDAY, STRONG,
+		CLOSED, BANNER, QUIT, DELETED, FILE1, SIZE1, THUMB1, FILE2, SIZE2, THUMB2)
+		VALUES((SELECT NVL(MAX(ENO),0)+1 AS ENO FROM EVENT), 'EVENT',
+		#{title}, #{content}, #{writer},
+		sysdate, #{startday}, #{endday}, #{strong}, #{closed}, #{banner}, #{quit},
+		#{deleted}, #{file1}, #{size1}, #{thumb1}, #{file2}, #{size2},
+		#{thumb2})
+	</insert>
+	<select id="selectBanner" resultType="com.project.vo.EventVO">
+    <![CDATA[
+    SELECT * FROM (SELECT ENO, TITLE, CONTENT, STARTDAY, ENDDAY,BANNER, STRONG, CLOSED, DELETED, QUIT, THUMB2, ROWNUM AS R FROM EVENT 
+    WHERE BANNER='Y' ORDER BY ENO DESC)WHERE R < 5
+    ]]>
+	</select> -->
+	<!-- mysql -->
+	<insert id="insertEvent" parameterType="EventVO">
+		INSERT INTO event(eno, bname, title, content, writer, regdate, startday,
+		endday, strong,
+		closed, banner, quit, deleted, file1, size1, thumb1, file2, size2, thumb2)
+		VALUES((select IFNULL(MAX(th.eno),0)+1 from event as th), 'EVENT',
+		#{title}, #{content}, #{writer},
+		now(), #{startday}, #{endday}, #{strong}, #{closed}, #{banner}, #{quit},
+		#{deleted}, #{file1}, #{size1}, #{thumb1}, #{file2}, #{size2},
+		#{thumb2})
+	</insert>
+	<select id="selectBanner" resultType="EventVO">
+    <![CDATA[
+    SELECT event.* FROM 
+		(SELECT @R:=@R+1 AS R, event.* FROM event,
+		(SELECT @R:=0)R WHERE banner='Y' ORDER BY eno DESC)event LIMIT 4
+    ]]>
+	</select>
+	<select id="allList" resultType="EventVO">
+		SELECT * FROM event ORDER BY eno DESC
+	</select>
+</mapper>
