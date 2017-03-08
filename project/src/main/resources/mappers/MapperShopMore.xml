@@ -16,4 +16,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="selectone" resultType="ThingVO" parameterType="int">
 		select * from thing where tno=(select tno from ShopMoreThing where sno=#{sno})
 	</select>
+	
+	<select id="selectlist" resultType="ShopMoreThingVO">
+		SELECT * FROM ShopMoreThing WHERE sno=#{sno}
+	</select>
 </mapper>

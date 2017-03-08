@@ -74,4 +74,10 @@ public class ShopServiceImpl implements ShopService {
 		// TODO Auto-generated method stub
 		return dao.strongCheck(vo);
 	}
+
+	@Override
+	public int maxNum() throws Exception {
+		// TODO Auto-generated method stub
+		return dao.maxNum();
+	}
 }

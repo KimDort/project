@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -36,6 +35,7 @@ import com.project.service.CtgroupService;
 import com.project.service.EventService;
 import com.project.service.MemberService;
 import com.project.service.NoticeService;
+import com.project.service.ShopMoreService;
 import com.project.service.ShopService;
 import com.project.service.ThingService;
 import com.project.tool.Criteria;
@@ -50,6 +50,7 @@ import com.project.vo.CtgroupVO;
 import com.project.vo.EventVO;
 import com.project.vo.MemberVO;
 import com.project.vo.NoticeVO;
+import com.project.vo.ShopMoreThingVO;
 import com.project.vo.ShopVO;
 import com.project.vo.ThingVO;
 
@@ -66,6 +67,8 @@ public class AdministratorController {
 	private static final Logger logger = LoggerFactory.getLogger(AdministratorController.class);
 	@Inject
 	private CookMoreService cmService;
+	@Inject
+	private ShopMoreService smService;
 	@Inject
 	private NoticeService noticeService;
 	@Inject
@@ -639,7 +642,7 @@ public class AdministratorController {
 			rttr.addFlashAttribute("msg", "SUCCESS");
 		}
 	}
-	//쿠킹 클래스 수정
+	//물건 카테고리 목록별 가져오기
 	@SuppressWarnings("unchecked")
 	@ResponseBody
 	@RequestMapping(value = "/Thing/Categorylist", method = RequestMethod.GET,produces="text/plain;charset=UTF-8")
@@ -670,6 +673,145 @@ public class AdministratorController {
 		
 		return obj.toJSONString();
 	}
+	
+	//카테고리 별 품목 상세 정보 
+	@SuppressWarnings("unchecked")
+	@ResponseBody
+	@RequestMapping(value = "/Thing/ThingInfo", method = RequestMethod.GET,produces="text/plain;charset=UTF-8")
+	public String getThingInfo(Model model,@RequestParam("tno")int tno)throws Exception{
+		logger.info("Request Ajax ");
+		JSONObject obj=new JSONObject();
+		
+		ThingVO vo =new ThingVO();
+		vo=thingService.read(tno);
+		
+		obj.put("thumb", vo.getThumb());
+		obj.put("cost", vo.getSellcost());
+		obj.put("name", vo.getName());
+		return obj.toJSONString();
+	}
+	
+	//쿠킹 클래스 등록
+	@RequestMapping(value = "/Shop/Create", method = RequestMethod.POST)
+	public String postShop(ShopVO vo, RedirectAttributes rttr, @RequestParam("shopmore") String[] shopmore,
+			HttpServletRequest request,@RequestParam("url")String url) throws Exception {
+		logger.info("Administrator Shop Register");
+		ShopMoreThingVO smtVO = new ShopMoreThingVO();
+		String[] tno = new String[shopmore.length];
+		vo.setSno(shopService.maxNum());
+		
+		if(shopService.regisertShop(vo)==1){
+			if(!shopmore[0].toString().equals("0")){
+				for (int i = 0; i < shopmore.length; i++) {
+					smtVO.setTno(Integer.parseInt(tno[i] = shopmore[i].toString()));
+					smtVO.setSno(vo.getSno());
+					smService.register(smtVO);
+				}
+			}
+			rttr.addFlashAttribute("msg", "SUCCESS");
+		}	
+		
+		return "redirect:/administrator/"+url;
+	}
+	//쿠킹 클래스 수정
+	@SuppressWarnings("unchecked")
+	@ResponseBody
+	@RequestMapping(value = "/Shop/Modify", method = RequestMethod.GET,produces="text/plain;charset=UTF-8")
+	public String getShopModify(Model model,@RequestParam("sno")int sno)throws Exception{
+		logger.info("Request Ajax ");
+		JSONObject obj=new JSONObject();
+		JSONArray array=new JSONArray();
+		
+		ShopVO vo=new ShopVO();
+		ThingVO thingVO=new ThingVO();
+		List<ShopMoreThingVO> smtList=new ArrayList<>();
+		
+		vo=shopService.read(sno);
+		thingVO=thingService.read(vo.getTno());
+		
+		obj.put("sno", vo.getSno());
+		obj.put("tno", vo.getTno());
+		
+		obj.put("ctgroup", thingVO.getCtgroup());
+		obj.put("category", thingVO.getCategory());
+		
+		obj.put("title", vo.getTitle());
+		obj.put("content", vo.getContent());
+		
+		obj.put("cost", vo.getCost());
+		obj.put("salecost", vo.getSalecost());
+		
+		
+		obj.put("st_begin", vo.getSt_begin());
+		obj.put("st_end", vo.getSt_end());
+		obj.put("st_day", vo.getSt_day());
+		
+		obj.put("clo_begin", vo.getClo_begin());
+		obj.put("clo_end", vo.getClo_end());
+		obj.put("clo_day", vo.getClo_day());
+		
+		obj.put("del_begin", vo.getDel_begin());
+		obj.put("del_end", vo.getDel_end());
+		obj.put("den_day", vo.getDel_day());
+		
+		obj.put("sale_begin", vo.getSale_begin());
+		obj.put("sale_end", vo.getSale_end());
+		obj.put("sale_day", vo.getSale_day());
+		
+		char display=vo.getDisplay();
+		char deleted=vo.getDeleted();
+		char strong=vo.getStrong();
+		char closed=vo.getClosed();
+		char sale=vo.getSale();
+		if(display=='Y'){
+			obj.put("display", true);
+		}else{
+			obj.put("display", false);
+		}
+		if( deleted=='Y'){
+			obj.put("deleted", true);
+		}else{
+			obj.put("deleted", false);
+		}
+		if(strong=='Y'){
+			obj.put("strong", true);
+		}else{
+			obj.put("strong", false);
+		}
+		if(closed=='Y'){
+			obj.put("closed", true);
+		}else{
+			obj.put("closed", false);
+		}
+		if(sale=='Y'){
+			obj.put("sale", true);
+		}else{
+			obj.put("sale", false);
+		}
+		
+		smtList=smService.selectList(sno);
+		Iterator<ShopMoreThingVO> it= smtList.iterator();
+		if(it!=null){
+			while(it.hasNext()){
+				ShopMoreThingVO cmtvo=it.next();
+				ThingVO tvo=new ThingVO();
+				JSONObject shopmore=new JSONObject();
+				
+				tvo=thingService.read(cmtvo.getTno());
+				
+				shopmore.put("shopmoretno", cmtvo.getTno());
+				shopmore.put("shopmorectgroup", tvo.getCtgroup());
+				shopmore.put("shopmorecategory", tvo.getCategory());
+				
+				array.add(shopmore);
+			}			
+		}
+		
+		obj.put("shopmore", array);
+		
+		return obj.toJSONString();
+	}
+	
 	/*
 	 * @RequestMapping(value = "/AllList", method = RequestMethod.GET) public
 	 * void home(Model model) throws Exception { logger.info(""); List<NoticeVO>

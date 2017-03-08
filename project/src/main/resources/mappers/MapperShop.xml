@@ -85,7 +85,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<!-- mysql -->
 	<select id="maxNum" resultType="int">
-		SELECT IFNULL(MAX(cno),0)+1 AS sno FROM SHOP
+		SELECT IFNULL(MAX(sno),0)+1 AS sno FROM SHOP
 	</select>
 	<insert id="insertShop">
 		INSERT INTO SHOP(sno, tno,bname,title, content, writer,

@@ -29,5 +29,10 @@ public class ShopMoreDAOImpl implements ShopMoreDAO{
 		// TODO Auto-generated method stub
 		return session.selectList("com.mapper.shopmore.selectone",sno);
 	}
+	@Override
+	public List<ShopMoreThingVO> selectList(int sno) throws Exception {
+		// TODO Auto-generated method stub
+		return session.selectList("com.mapper.shopmore.selectlist",sno);
+	}
 
 }

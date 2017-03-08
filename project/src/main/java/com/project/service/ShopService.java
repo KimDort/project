@@ -16,4 +16,5 @@ public interface ShopService {
   public List<ShopVO> listAll()throws Exception;
   public int checkDisplay(ShopVO vo)throws Exception;
   public int checkStrong(ShopVO vo)throws Exception;
+  public int maxNum()throws Exception;
 }

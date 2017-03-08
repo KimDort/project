@@ -33,4 +33,10 @@ public class ShopMoreServiceImpl implements ShopMoreService{
 		return dao.selectone(sno);
 	}
 
+	@Override
+	public List<ShopMoreThingVO> selectList(int sno) throws Exception {
+		// TODO Auto-generated method stub
+		return dao.selectList(sno);
+	}
+
 }

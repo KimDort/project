@@ -9,4 +9,5 @@ public interface ShopMoreService {
 	public int register(ShopMoreThingVO vo)throws Exception;
 	public int max()throws Exception;
 	public List<ThingVO> selectone(int sno)throws Exception;
+	public List<ShopMoreThingVO> selectList(int sno)throws Exception;
 }

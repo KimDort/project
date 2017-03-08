@@ -36,7 +36,32 @@ body{
 	border:1px solid #e4e4e4;
 	text-align: center;
 }
-
+#cal2Container_t_0 {
+	border:1px solid #e4e4e4;
+	width: 50%;
+	float: left;
+}
+#cal2Container_t_0 th{
+	background-color: #e4e4e4;
+	border-bottom: 1px solid #4c4c4c;
+}
+#cal2Container_t_0 tr{
+	border:1px solid #e4e4e4;
+	text-align: center;
+}
+#cal2Container_t_1 {
+	border:1px solid #e4e4e4;
+	width: 50%;
+	float: left;
+}
+#cal2Container_t_1 th{
+	background-color: #909090;
+	border-bottom: 1px solid #4c4c4c;
+}
+#cal2Container_t_1 tr{
+	border:1px solid #e4e4e4;
+	text-align: center;
+}
 #cal3Container_t_0{
 	border:1px solid #e4e4e4;
 	width: 50%;

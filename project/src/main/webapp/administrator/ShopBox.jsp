@@ -30,7 +30,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script type="text/JavaScript">
 	window.onload = function() {
-		
+		$.ajaxSetup({dataType:"text"});
+		CKEDITOR.replace('content'); // Cooking Class<TEXTAREA>태그 id 값
 	};
 	
 	$(document).ready(function(){		
@@ -45,30 +46,49 @@
 		});
 		$("#AddItem").on("click",function(){
 			$("form[id='frm']")[0].reset();
+			CKEDITOR.instances.content.setData("");
 			$("#frm").attr("action","./Shop/Create")
 		});
 		
-		$("#ctgroup").on("click change",function(){
-			var ctgroup=$("#ctgroup option:selected").val();
+		$("select[id='ctgroup']").on("click change",function(){
+			var index=$("select[id='ctgroup']").index(this);
+			var ctgroup=$(this).val();
 			$.getJSON("./Thing/CategoryList/"+ctgroup, function(data){
 				var str="";
-				$("#categorylist").empty();			
+				$("select[id='categorylist']").eq(index).empty();			
 				$(data).each(
 					function(){
 						str="<option value='"+this.ctno+"'>"+this.ctname+"</option>";
-						$("#categorylist").append(str);		
+						$("select[id='categorylist']").eq(index).append(str);		
 					});
 			});
 		});
 		
-		$("#categorylist").on("click change",function(){
-			var ctgroup=$("#ctgroup option:selected").val();
-			var ctno=$("#categorylist option:selected").val();
+		$("select[id='categorylist']").on("click change",function(){
+			var index=$("select[id='categorylist']").index(this);
+			var ctgroup=$("select[id='ctgroup'] option:selected").eq(index).val();
+			var ctno=$(this).val();
 			var url="/administrator/Thing/Categorylist?ctgroup="+ctgroup+"&ctno="+ctno;
 			$.getJSON(url,function(data){
-				$("#thinglist").empty();
+				$("select[id='thinglist']").eq(index).empty();
 				$(data.thingCategoryList).each(function(key, value){
-					$("#thinglist").append("<option value='"+value.tno+"'>"+value.name+"</option>");
+					$("select[id='thinglist']").eq(index).append("<option value='"+value.tno+"'>"+value.name+"</option>");
+					if(index==1){
+						$("#shopmore").html("<option value='"+value.shopmoretno+"'>"+value.name+"</option>");
+					}
+				});
+			});
+		});
+		
+		$("#thinglist").on("click change",function(){
+			var tno=$("#thinglist option:selected").val();
+			var url="/administrator/Thing/ThingInfo?tno="+tno;
+			$.getJSON(url,function(data){
+				$(data).each(function(){
+					$("#coverimage").html("<img src='/photo_upload/thing/"+this.thumb+"' style='width:300px;height: 300px;'>");
+					$("#file").attr("value",this.thumb);
+					$("#cost").attr("value",this.cost);
+					$("#title").attr("value",this.name);
 				});
 			});
 		});
@@ -154,32 +174,6 @@
 	background-color: rgba(255, 255, 255, .23);
 	border-bottom-color: transparent;
 }
-#cal2Container_t_0 {
-	border:1px solid #e4e4e4;
-	width: 50%;
-	float: left;
-}
-#cal2Container_t_0 th{
-	background-color: #e4e4e4;
-	border-bottom: 1px solid #4c4c4c;
-}
-#cal2Container_t_0 tr{
-	border:1px solid #e4e4e4;
-	text-align: center;
-}
-#cal2Container_t_1 {
-	border:1px solid #e4e4e4;
-	width: 50%;
-	float: left;
-}
-#cal2Container_t_1 th{
-	background-color: #909090;
-	border-bottom: 1px solid #4c4c4c;
-}
-#cal2Container_t_1 tr{
-	border:1px solid #e4e4e4;
-	text-align: center;
-}
 </style>
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
@@ -250,13 +244,31 @@
 														</div>
 														<!-- 모달 바디 -->
 														<div class="modal-body">
-															<div class="container" style="width: 100%;">
+														<div class="container" style="width: 100%;">
 																<div class="row">
+																	<div class="form-group">
+																		<label>CATEGORY GROUP</label>
+																		<select id="ctgroup" class="form-control">
+																		<c:forEach items="${ctgroup }" var="list">
+																			<option value="${list.ctgroup }">${list.name }</option>
+																		</c:forEach>
+																		</select>
+																	</div>																	
+																	<div class="form-group">
+																		<label>CATEGORY</label>
+																		<select id="categorylist" class="form-control">																			
+																		</select>
+																	</div>
+																	<div class="form-group">
+																		<label>THING</label>
+																		<select id="thinglist" class="form-control" name="tno">
+																		</select>
+																	</div>
 																	<div class="form-group">
 																		<label for="writer">WRITER : </label>
 																		<input type="text" value="${sessionScope.MemberVO.id }"	name="writer" readonly="readonly"
 																			class="form-control">
-																		<input type="hidden" id="cno">
+																		<input type="hidden" id="sno">
 																	</div>
 																	<div class="form-group">
 																		<label for="title">TITLE :</label> 
@@ -265,8 +277,23 @@
 																	<div class="form-group">
 																		<label for="content">CONTENT :</label>
 																		<textarea name="content" id="content" class="form-control" rows="20"></textarea>
+																	</div>																	
+																	<div class="form-group">
+																		<label for="file">COVER IMAGE :</label>
+																		<div id="coverimage"></div>
+																		<input type="hidden" id="file" name="file1" class="form-control">
+																	</div>																	
+																	<div class="form-group">
+																		<label>COST</label> 
+																		<input type="text" name="cost"	class="form-control" id="cost">
 																	</div>
 																	<div class="form-group">
+																		<label>SALE COST</label> 
+																		<input type="text" name="salecost"	class="form-control" id="salecost">
+																	</div>
+																	<div class="form-group">
+																	<label>ADD MORE SHOP</label>
+																	<label>CATEGORY GROUP</label>
 																		<select id="ctgroup" class="form-control">
 																		<c:forEach items="${ctgroup }" var="list">
 																			<option value="${list.ctgroup }">${list.name }</option>
@@ -274,41 +301,12 @@
 																		</select>
 																	</div>																	
 																	<div class="form-group">
+																		<label>CATEGORY</label>
 																		<select id="categorylist" class="form-control">																			
 																		</select>
 																	</div>
 																	<div class="form-group">
-																		<select id="thinglist" class="form-control">
-																		</select>
-																	</div>
-																	<div class="form-group">
-																		<label for="file">COVER IMAGE :</label>
-																		<div class="col-md-4" id="coverimage" style="width: 400px;height: 400px;"></div>
-																		<input type="hidden" id="file" name="file1">
-																	</div>
-																	<div class="form-group">
-																		<div id="cal1Container"></div>
-																	</div>
-																	<div class="form-group">
-																		<div id="dates">
-																			<label for="startday">STARTDAY:</label> 
-																			<input type="text" name="startday" id="ask_in"
-																					class="form-control" readonly="readonly">
-																			<label for="endday">ENDDAY:</label> 
-																			<input type="text" name="endday" id="ask_out"
-																					class="form-control" readonly="readonly">
-																		</div>
-																	</div>																	
-																	<div class="form-group">
-																		<label>COST</label> 
-																		<input type="text" name="cost"	class="form-control" id="cost" readonly="readonly">
-																	</div>
-																	<div class="form-group">
-																		<label>SALE COST</label>
-																		<input type="text"	name="salecost" class="form-control" id="salecost">
-																	</div>
-																	<div class="form-group">
-																		<label>ADD MORE SHOP</label> 
+																		<label>THING LIST </label>																		
 																		<select	class="form-control" id="shopmore" multiple="multiple" name="shopmore">
 																		<option value="0" selected="selected">없음</option>
 																		<c:forEach items="${shop }" var="slist">
@@ -431,7 +429,7 @@
 																		</tbody>
 																	</table>
 																</div>
-															</div>
+															</div>															
 														</div>
 														<div class="modal-footer">
 															<input type="button" value="Add" class="btn btn-default" id="shopsubmit">
@@ -443,7 +441,6 @@
 											<!-- 모달 끝 -->
 										</form>
 									</div>
-									<div class="row">
 										<div class="row">
 											<div class="tab-content">
 												<div id="shopboxlist" class="tab-pane fade in active">
@@ -453,16 +450,16 @@
 																<c:forEach items="${shop }" var="list">
 																	<div class="col-sm-3" style="margin-top: 10px;">
 																		<div class="row">
-																			<label>No.${list.tno } ${list.title }</label>
+																			<label>No.${list.sno } ${list.title }</label>
 																		</div>
-																		<img src="/photo_upload/thing/${list.thumb }"
+																		<img src="/photo_upload/thing/${list.file1 }"
 																			style="width: 227px; height: 227px;">
 																		<div class="row">
 																			<input type="button" value="DELETE"
 																				class="btn btn-default"
-																				onclick="deleteItem(${list.tno})"> <input
+																				onclick="deleteItem(${list.sno})"> <input
 																				type="button" value="MODIFY" class="btn btn-default"
-																				onclick="getAjax(${list.tno})" data-toggle="modal"
+																				onclick="getAjax(${list.sno})" data-toggle="modal"
 																				data-target="#shopadd">
 																		</div>
 																	</div>
@@ -504,7 +501,6 @@
 					</div>
 				</div>
 			</div>
-		</div>
 	</section>
 </body>
 </html>
