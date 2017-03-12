@@ -1,5 +1,4 @@
- 
- <%@ page contentType="text/html; charset=UTF-8"%>
+<%@ page contentType="text/html; charset=UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
@@ -20,8 +19,7 @@
 <link rel="stylesheet"
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <link href="../css/style.css" rel="Stylesheet" type="text/css">
-<script type="text/javascript" src="../js/admin_shop.js"></script>
-<script type="text/javascript" src="../js/calendar.js"></script>
+<script type="text/javascript" src="../js/admin_notice.js"></script>
 <script type="text/javascript" src="../js/jquery.number.js"></script>
 <script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
 
@@ -31,66 +29,113 @@
 <script type="text/JavaScript">
 	window.onload = function() {
 		$.ajaxSetup({dataType:"text"});
-		CKEDITOR.replace('content'); // Cooking Class<TEXTAREA>태그 id 값
+		CKEDITOR.replace('content'); // Notice <TEXTAREA>태그 id 값 
 	};
 	
-	$(document).ready(function(){		
+	$(document).ready(function(){
+		var nnoIndex=$("input[id='listnno']");
 		var result = '${msg}';
 		if (result == 'SUCCESS') {
 		  alert("요청이 정상적으로 처리되었습니다.");
 		}		
-		$("#shopsubmit").on("click",function(){
+		$("#noticesubmit").on("click",function(){
 			if(check()==true){
 				$("#frm").submit();
 			}	
 		});
+		
 		$("#AddItem").on("click",function(){
 			$("form[id='frm']")[0].reset();
-			CKEDITOR.instances.content.setData("");
-			$("#frm").attr("action","./Shop/Create")
+			$("#frm").attr("action","./Notice/Create")
+			CKEDITOR.instances.content.setData();
 		});
 		
-		$("select[id='ctgroup']").on("click change",function(){
-			var index=$("select[id='ctgroup']").index(this);
-			var ctgroup=$(this).val();
-			$.getJSON("./Thing/CategoryList/"+ctgroup, function(data){
-				var str="";
-				$("select[id='categorylist']").eq(index).empty();			
-				$(data).each(
-					function(){
-						str="<option value='"+this.ctno+"'>"+this.ctname+"</option>";
-						$("select[id='categorylist']").eq(index).append(str);		
-					});
-			});
-		});
-		
-		$("select[id='categorylist']").on("click change",function(){
-			var index=$("select[id='categorylist']").index(this);
-			var ctgroup=$("select[id='ctgroup'] option:selected").eq(index).val();
-			var ctno=$(this).val();
-			var url="/administrator/Thing/Categorylist?ctgroup="+ctgroup+"&ctno="+ctno;
-			$.getJSON(url,function(data){
-				$("select[id='thinglist']").eq(index).empty();
-				$("#shopmore").empty();
-				$(data.thingCategoryList).each(function(key, value){
-					$("select[id='thinglist']").eq(index).append("<option value='"+value.tno+"'>"+value.name+"</option>");
-					if(index==1){						
-						$("#shopmore").append("<option value='"+value.tno+"'>"+value.name+"</option>");
+		$("select[id='strong']").on("change",function(){
+			var index=$("select[id='strong']").index(this);
+			var strong=this.value;
+			var nno=nnoIndex[index].value;		
+			$.ajax({
+				type:'put',
+				url:'/administrator/Notice/Strong/Update/'+nno,
+				headers :{
+					"Content-type":"application/json",
+					"X-HTTP-Method-Override":"PUT"
+				},
+				data : JSON.stringify({strong:strong}),
+				dataType:'text',
+				success:function(result){
+					console.log("result: "+result);
+					if(result== 'SUCCESS'){
+						alert(nno+" 번째 게시물의 강조 여부를 "+strong+"로 변경완료 하였습니다.");
 					}
-				});
+				}
 			});
 		});
 		
-		$("#thinglist").on("click change",function(){
-			var tno=$("#thinglist option:selected").val();
-			var url="/administrator/Thing/ThingInfo?tno="+tno;
-			$.getJSON(url,function(data){
-				$(data).each(function(){
-					$("#coverimage").html("<img src='/photo_upload/thing/"+this.thumb+"' style='width:300px;height: 300px;'>");
-					$("#file").attr("value",this.thumb);
-					$("#cost").attr("value",this.cost);
-					$("#title").attr("value",this.name);
-				});
+		$("select[id='closed']").on("change",function(){
+			var index=$("select[id='closed']").index(this);
+			var closed=this.value;
+			var nno=nnoIndex[index].value;		
+			$.ajax({
+				type:'put',
+				url:'/administrator/Notice/Closed/Update/'+nno,
+				headers :{
+					"Content-type":"application/json",
+					"X-HTTP-Method-Override":"PUT"
+				},
+				data : JSON.stringify({closed:closed}),
+				dataType:'text',
+				success:function(result){
+					console.log("result: "+result);
+					if(result== 'SUCCESS'){
+						alert(nno+" 번째 게시물의 강조 여부를 "+closed+"로 변경완료 하였습니다.");
+					}
+				}
+			});
+		});
+		
+		$("select[id='deleted']").on("change",function(){
+			var index=$("select[id='deleted']").index(this);
+			var deleted=this.value;
+			var nno=nnoIndex[index].value;		
+			$.ajax({
+				type:'put',
+				url:'/administrator/Notice/Deleted/Update/'+nno,
+				headers :{
+					"Content-type":"application/json",
+					"X-HTTP-Method-Override":"PUT"
+				},
+				data : JSON.stringify({deleted:deleted}),
+				dataType:'text',
+				success:function(result){
+					console.log("result: "+result);
+					if(result== 'SUCCESS'){
+						alert(nno+" 번째 게시물의 강조 여부를 "+deleted+"로 변경완료 하였습니다.");
+					}
+				}
+			});
+		});
+		
+		
+		$("select[id='display']").on("change",function(){
+			var index=$("select[id='display']").index(this);
+			var display=this.value;
+			var nno=nnoIndex[index].value;		
+			$.ajax({
+				type:'put',
+				url:'/administrator/Notice/Display/Update/'+nno,
+				headers :{
+					"Content-type":"application/json",
+					"X-HTTP-Method-Override":"PUT"
+				},
+				data : JSON.stringify({display:display}),
+				dataType:'text',
+				success:function(result){
+					console.log("result: "+result);
+					if(result== 'SUCCESS'){
+						alert(nno+" 번째 게시물의 강조 여부를 "+display+"로 변경완료 하였습니다.");
+					}
+				}
 			});
 		});
 	});
@@ -133,9 +178,6 @@
 @media screen and (max-height: 450px) {
   .sidenav {padding-top: 15px;}
   .sidenav a {font-size: 18px;}
-}
-.btn-default{
-	font-size: 9pt;
 }
 /*Panel tabs*/
 .panel-tabs {
@@ -208,68 +250,39 @@
 								<div class="container" style="width: 100%;">
 									<div class="row">
 										<div class="col-md-12">
-											<ul class="nav nav-tabs" style="float: left;">
-												<li class="active"><a
-													href="http://happyrecipek.iptime.org:9090/administrator/ShopBox?page=1&perPageNum=12">
-														<span class="glyphicon glyphicon-th-large"></span>
-												</a></li>
-												<li>
-													<a href="http://happyrecipek.iptime.org:9090/administrator/ShopTable?page=1&perPageNum=12">
+											<ul class="nav nav-tabs" style="float: left;">												
+												<li class="active">
+													<a href="http://happyrecipek.iptime.org:9090/administrator/NoticeTable?page=1&perPageNum=12"> 
 														<span class="glyphicon glyphicon-list"></span>
 													</a>
 												</li>
 											</ul>
-												<input type="button" class="form-control" style="width: 30%; display: inline; float: right;" 
-												value="Add Shop" id="AddItem" data-toggle="modal" data-target="#shopadd">
+											<input type="button" class="form-control"
+												style="width: 30%; display: inline; float: right;"
+												value="Add Notice" id="AddItem" data-toggle="modal"
+												data-target="#noticeadd">
 										</div>
-										
-									</div>
-									<div class="row">
-										<form id="frm" enctype="multipart/form-data" method="post" action="./Shop/Create">
-										<c:if test="${pageMaker.cri.ctgroup ne 0 }">
-											<input type="hidden" name="ctgroup" value="${pageMaker.cri.ctgroup}">
-										</c:if>
-										<c:if test="${pageMaker.cri.category ne 0 }">
-											<input type="hidden" name="category" value="${pageMaker.cri.category}">
-										</c:if>									
+										<form id="frm" enctype="multipart/form-data" method="post" action="./Notice/Create">
 										<input type="hidden" name="page" value="${pageMaker.cri.page }">
-										<input type="hidden" name="perPageNum" value="${pageMaker.cri.perPageNum }">
-										<input type="hidden" name="url" value="ShopBox">
+										<input type="hidden" name="page" value="${pageMaker.cri.perPageNum }">
+										<input type="hidden" name="url" value="NoticeTable">
 											<!-- 모달 시작 -->
-											<div class="modal fade" id="shopadd" role="dialog">
+											<div class="modal fade" id="noticeadd" role="dialog">
 												<div class="modal-dialog modal-lg">
 													<div class="modal-content">
 														<div class="modal-header">
 															<button type="button" class="close" data-dismiss="modal">&times;</button>
-															<h4 class="modal-title">Add Shop</h4>
+															<h4 class="modal-title">Add Notice</h4>
 														</div>
 														<!-- 모달 바디 -->
 														<div class="modal-body">
-														<div class="container" style="width: 100%;">
+															<div class="container" style="width: 100%;">
 																<div class="row">
-																	<div class="form-group">
-																		<label>CATEGORY GROUP</label>
-																		<select id="ctgroup" class="form-control">
-																		<c:forEach items="${ctgroup }" var="list">
-																			<option value="${list.ctgroup }">${list.name }</option>
-																		</c:forEach>
-																		</select>
-																	</div>																	
-																	<div class="form-group">
-																		<label>CATEGORY</label>
-																		<select id="categorylist" class="form-control">																			
-																		</select>
-																	</div>
-																	<div class="form-group">
-																		<label>THING</label>
-																		<select id="thinglist" class="form-control" name="tno">
-																		</select>
-																	</div>
 																	<div class="form-group">
 																		<label for="writer">WRITER : </label>
 																		<input type="text" value="${sessionScope.MemberVO.id }"	name="writer" readonly="readonly"
 																			class="form-control">
-																		<input type="hidden" id="sno">
+																		<input type="hidden" id="nno">
 																	</div>
 																	<div class="form-group">
 																		<label for="title">TITLE :</label> 
@@ -278,43 +291,11 @@
 																	<div class="form-group">
 																		<label for="content">CONTENT :</label>
 																		<textarea name="content" id="content" class="form-control" rows="20"></textarea>
-																	</div>																	
+																	</div>
 																	<div class="form-group">
 																		<label for="file">COVER IMAGE :</label>
-																		<div id="coverimage"></div>
-																		<input type="hidden" id="file" name="file1" class="form-control">
+																		<input type="file" id="file" name="file1MF" class="form-control">
 																	</div>																	
-																	<div class="form-group">
-																		<label>COST</label> 
-																		<input type="text" name="cost"	class="form-control" id="cost">
-																	</div>
-																	<div class="form-group">
-																		<label>SALE COST</label> 
-																		<input type="text" name="salecost"	class="form-control" id="salecost">
-																	</div>
-																	<div class="form-group">
-																	<label>ADD MORE SHOP</label>
-																	<label>CATEGORY GROUP</label>
-																		<select id="ctgroup" class="form-control">
-																		<c:forEach items="${ctgroup }" var="list">
-																			<option value="${list.ctgroup }">${list.name }</option>
-																		</c:forEach>
-																		</select>
-																	</div>																	
-																	<div class="form-group">
-																		<label>CATEGORY</label>
-																		<select id="categorylist" class="form-control">																			
-																		</select>
-																	</div>
-																	<div class="form-group">
-																		<label>THING LIST </label>																		
-																		<select	class="form-control" id="shopmore" multiple="multiple" name="shopmore">
-																		<option value="0" selected="selected">없음</option>
-																		<c:forEach items="${shop }" var="slist">
-																			<option value="${slist.sno }">${slist.title }</option>
-																		</c:forEach>
-																		</select>
-																	</div>
 																</div>
 																<div class="form-group" style="width: 100%;">
 																	<table class="table">
@@ -408,32 +389,14 @@
 																				<th colspan="5">세일 여부 결정 YES /기간 설정 가능 / 등록일로부터
 																					몇일까지만 세일 설정 가능
 																				</th>
-																			</tr>
-																			<tr class="success">
-																				<th>SALE</th>
-																				<td>
-																					<input type="checkbox" name="sale" value='Y' class="checkbox" id="sale">
-																				</td>
-																				<td>
-																					<input type="text" class="form-control"	name="sale_begin" placeholder="ex) 12/16 = MONTH/DAY" 
-																					maxlength="5" id="sale_begin">
-																				</td>
-																				<td>
-																					<input type="text" class="form-control" name="sale_end" placeholder="ex) 12/16 = MONTH/DAY"
-																					maxlength="5" id="sale_end">
-																				</td>
-																				<td>
-																					<input type="text" class="form-control"	name="sale_day"	placeholder="Register Day later Day Only Number"
-																					maxlength="5" id="sale_day">
-																				</td>
-																			</tr>
+																			</tr>																			
 																		</tbody>
 																	</table>
 																</div>
-															</div>															
+															</div>
 														</div>
 														<div class="modal-footer">
-															<input type="button" value="Add" class="btn btn-default" id="shopsubmit">
+															<input type="button" value="Add" class="btn btn-default" id="noticesubmit">
 															<button type="button" class="btn btn-default" data-dismiss="modal" id="close">Close</button>
 														</div>
 													</div>
@@ -442,57 +405,107 @@
 											<!-- 모달 끝 -->
 										</form>
 									</div>
-										<div class="row">
-											<div class="tab-content">
-												<div id="shopboxlist" class="tab-pane fade in active">
-													<div class="col-md-12" id="shoplist">
-														<div class="container">
-															<div class="row">
-																<c:forEach items="${shop }" var="list">
-																	<div class="col-sm-3" style="margin-top: 10px;">
-																		<div class="row">
-																			<label>No.${list.sno } ${list.title }</label>
-																		</div>
-																		<img src="/photo_upload/thing/${list.file1 }"
-																			style="width: 227px; height: 227px;">
-																		<div class="row">
-																			<input type="button" value="DELETE"
-																				class="btn btn-default"
-																				onclick="deleteItem(${list.sno}, ${pageMaker.cri.page }, ${pageMaker.cri.perPageNum },'ShopBox')"> <input
-																				type="button" value="MODIFY" class="btn btn-default"
-																				onclick="getAjax(${list.sno})" data-toggle="modal"
-																				data-target="#shopadd">
-																		</div>
-																	</div>
-																</c:forEach>
-															</div>
-															<div class="row">
+									<div class="row">
+										<div class="tab-content">
+											<div id="noticeboxlist" class="tab-pane fade in active">
+												<table class="table table-striped" id="noticeTlist">
+													<thead>
+														<tr>
+															<th>No.</th>
+															<th>Title</th>
+															<th>RegDate</th>															
+															<th>Strong</th>
+															<th>Closed</th>
+															<th>Deleted</th>
+															<th>Display</th>
+															<th>Modify</th>
+															<th>Delete</th>
+														</tr>
+													</thead>
+													<tbody>
+														<c:forEach items="${notice }" var="tlist">
+														<tr>
+															<td>${tlist.nno }<input type="hidden" value=${tlist.nno } id="listnno"></td>
+															<td>${tlist.title }</td>
+															<td>${tlist.regdate }</td>
+															<td>
+																<select name="strong" class="form-control" id="strong">
+																	<option value='Y' 
+																	<c:out value="${tlist.strong eq 'Y'.charAt(0)?'selected=selected':'' }"/>>
+																	Y</option>
+																	<option value='N'
+																	<c:out value="${tlist.strong eq 'N'.charAt(0)?'selected=selected':'' }"/>>
+																	N</option>
+																</select>
+															</td>
+															<td>
+																<select name="closed" class="form-control" id="closed">
+																	<option value='Y' 
+																	<c:out value="${tlist.closed eq 'Y'.charAt(0)?'selected=selected':'' }"/>>
+																	Y</option>
+																	<option value='N'
+																	<c:out value="${tlist.closed eq 'N'.charAt(0)?'selected=selected':'' }"/>>
+																	N</option>
+																</select>
+															</td>
+															<td>
+																<select name="deleted" class="form-control" id="deleted">
+																	<option value='Y' 
+																	<c:out value="${tlist.deleted eq 'Y'.charAt(0)?'selected=selected':'' }"/>>
+																	Y</option>
+																	<option value='N'
+																	<c:out value="${tlist.deleted eq 'N'.charAt(0)?'selected=selected':'' }"/>>
+																	N</option>
+																</select>
+															</td>															
+															<td>
+																<select name="display" class="form-control" id="display">
+																	<option value='Y' 
+																	<c:out value="${tlist.display eq 'Y'.charAt(0)?'selected=selected':'' }"/>>
+																	Y</option>
+																	<option value='N'
+																	<c:out value="${tlist.display eq 'N'.charAt(0)?'selected=selected':'' }"/>>
+																	N</option>
+																</select>
+															</td>
+															<td>
+																<input type="button" value="Modify" class="btn btn-default"
+																		onclick="getAjax(${tlist.nno})" data-toggle="modal" data-target="#noticeadd">
+															</td>
+															<td>
+																<input type="button" value="Delete" class="btn btn-default"
+																		onclick="deleteItem(${tlist.nno}, ${pageMaker.cri.page }, ${pageMaker.cri.perPageNum })">
+															</td>
+														</tr>
+														</c:forEach>														
+													</tbody>
+													<tfoot>
+														<tr>
+															<td colspan="17">
 																<div class="text-center">
-																	<ul class="pagination">
-																		<c:if test="${pageMaker.prev }">
-																			<li><a
-																				href="ShopBox?page=${pageMaker.startPage-1 }">&laquo;</a>
-																			</li>
-																		</c:if>
-																		<c:forEach begin="${pageMaker.startPage }"
-																			end="${pageMaker.endPage }" var="idx">
-																			<li
-																				<c:out value="${pageMaker.cri.page==idx?'class=active':''}"/>>
-																				<a href="ShopBox?page=${idx }">${idx }</a>
-																			</li>
-																		</c:forEach>
-																		<c:if
-																			test="${pageMaker.next && pageMaker.endPage > 0 }">
-																			<li><a
-																				href="ShopBox?page=${pageMaker.startPage+1 }">&raquo;</a>
-																			</li>
-																		</c:if>
-																	</ul>
-																</div>
+																<ul class="pagination">
+																	<c:if test="${pageMaker.prev }">
+																		<li>
+																			<a href="NoticeTable?page=${pageMaker.startPage-1 }">&laquo;</a>
+																		</li>
+																	</c:if>
+																	<c:forEach begin="${pageMaker.startPage }" end="${pageMaker.endPage }" var="idx">
+																		<li
+																			<c:out value="${pageMaker.cri.page==idx?'class=active':''}"/>>
+																			<a href="NoticeTable?page=${idx }">${idx }</a>
+																		</li>
+																	</c:forEach>
+																	<c:if test="${pageMaker.next && pageMaker.endPage > 0 }">
+																		<li>
+																			<a href="NoticeTable?page=${pageMaker.startPage+1 }">&raquo;</a>
+																		</li>
+																	</c:if>
+																</ul>
 															</div>
-														</div>
-													</div>
-												</div>
+															</td>
+														</tr>
+													</tfoot>
+												</table>
 											</div>
 										</div>
 									</div>
@@ -502,6 +515,7 @@
 					</div>
 				</div>
 			</div>
+		</div>
 	</section>
 </body>
 </html>

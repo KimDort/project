@@ -37,4 +37,6 @@ public interface CookDAO {
 	public int delete(int cno)throws Exception;
 	
 	public int modify(CookVO vo)throws Exception;
+	
+	public List<CookVO> selectSale()throws Exception;
 }

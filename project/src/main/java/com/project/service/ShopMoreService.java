@@ -10,4 +10,5 @@ public interface ShopMoreService {
 	public int max()throws Exception;
 	public List<ThingVO> selectone(int sno)throws Exception;
 	public List<ShopMoreThingVO> selectList(int sno)throws Exception;
+	public int delete(int sno)throws Exception;
 }

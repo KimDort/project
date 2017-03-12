@@ -37,4 +37,6 @@ public interface ShopDAO {
 	public int delete(int sno)throws Exception;
 	
 	public int modify(ShopVO vo)throws Exception;
+	
+	public List<ShopVO> selectSale()throws Exception;
 }

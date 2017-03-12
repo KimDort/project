@@ -27,6 +27,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 		Object MemberVO = modelMap.get("MemberVO");
 		Object login=null;
 		Object confirm=null;
+		Object level=null;
 		MemberVO vo=(com.project.vo.MemberVO) MemberVO;
 		if(modelMap.get("false")!=null){
 			login=modelMap.get("false");
@@ -37,9 +38,8 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 			out.flush();
 			}
 		}else if(modelMap.get("confirm")!=null){
-			confirm=modelMap.get("confirm");
+			confirm=modelMap.get("confirm");			
 			if(confirm.equals('N') || confirm.toString().charAt(0)=='N' || confirm.equals("N")){
-				System.out.println("메일 계정 인증 받지 못함 : " + confirm.toString());
 				response.setContentType("text/html; charset=UTF-8");
 				PrintWriter out = response.getWriter();
 				out.println("<script>alert('귀하의 메일로 인증코드를 전송하였습니다.'); location.herf='http://localhost:9090';</script>");
@@ -50,16 +50,24 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 				session.setAttribute("MemberVO", MemberVO);
 				if (session.getAttribute("dest") != null) {
 					Object dest = session.getAttribute("dest");
-					if (request.getSession().getAttribute("tno") != null) {
-						Object[] tno = (Object[]) request.getSession().getAttribute("tno");
-						Object[] orderStock = (Object[]) request.getSession().getAttribute("orderStock");
-						Object sno=request.getSession().getAttribute("sno");
+					String uri=(String) dest;
+					String[] checkUri=uri.split("/");
+					if(!checkUri.equals("administrator")){
+						if (request.getSession().getAttribute("tno") != null) {
+							Object[] tno = (Object[]) request.getSession().getAttribute("tno");
+							Object[] orderStock = (Object[]) request.getSession().getAttribute("orderStock");
+							Object sno=request.getSession().getAttribute("sno");
 
-						request.getSession().setAttribute("MemberVO", MemberVO);	
-						request.getSession().setAttribute("tno", tno);
-						request.getSession().setAttribute("orderStock", orderStock);
-						request.getSession().setAttribute("sno", sno);
-						response.sendRedirect((String) dest);
+							request.getSession().setAttribute("MemberVO", MemberVO);	
+							request.getSession().setAttribute("tno", tno);
+							request.getSession().setAttribute("orderStock", orderStock);
+							request.getSession().setAttribute("sno", sno);
+							response.sendRedirect((String) dest);
+						}else{
+							level=modelMap.get("level");
+							char mlevel=(char) level;
+							
+						}
 					}
 				}else {
 					request.getSession().setAttribute("MemberVO", MemberVO);

@@ -110,6 +110,12 @@ public class ShopDAOImpl implements ShopDAO {
 		// TODO Auto-generated method stub
 		return session.update("com.mapper.shop.ShopUpdate",vo);
 	}
+
+	@Override
+	public List<ShopVO> selectSale() throws Exception {
+		// TODO Auto-generated method stub
+		return session.selectList("com.mapper.shop.selectSale");
+	}
 	
 	
 }

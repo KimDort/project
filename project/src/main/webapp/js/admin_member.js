@@ -79,7 +79,7 @@ function check(){
 		$("#maxmember").focus();
 		return false;
 	}
-	if($("#frm").attr("action")=="./Cook/Modify"){
+	if($("#frm").attr("action")=="./Member/Modify"){
 		if($("#file").val()==""){
 			if(confirm("기존의 커버이미지를 사용하시겠습니까?")==true){
 				return true;
@@ -90,10 +90,10 @@ function check(){
 	}
 	return true;
 }
-function deleteItem(cno, page, perPageNum, url){
+function deleteItem(mno,page,perPageNum){
 	if(confirm("정말 삭제하시겠습니까?")==true){
-		location.href='http://happyrecipek.iptime.org:9090/administrator/Cook/Delete?cno='+cno+"&page="+page+"&perPageNum="+perPageNum
-		+"&url="+url;
+		location.href='http://happyrecipek.iptime.org:9090/administrator/Member/Delete?mno='+mno+"&page="+page+"&perPageNum="+perPageNum
+		+"&url=MemberTable";
 	}else{
 		return false;
 	}
@@ -104,72 +104,14 @@ function closemodal(){
 		$("form[id='frm']")[0].reset();
 	});
 }
-function getAjax(cno){
-	var url="/administrator/Cook/Modify?cno="+cno;
+function getAjax(mno){
+	var url="/administrator/Member/Modify?mno="+mno;
 	$.getJSON(url,function(data){
 		$(data).each(function(){
-			$("#cno").val(this.cno);
-			$("#cno").attr("name","cno");
-			$("#title").val(this.title);
-			CKEDITOR.instances.content.setData(this.content);
-			$("#ask_in").val(this.askstart);
-			$("#ask_out").val(this.askend);
-			$("#in").val(this.startday);
-			$("#out").val(this.endday);
-			$("#starttime").val(this.starttime);
-			$("#endtime").val(this.endtime);
-			$("#cost").val(this.cost);
-			$("#salecost").val(this.salecost);
-			$("#someready").val(this.someready);
-			if(this.shopmore.length!=0){
-				$("#shopmore").find("option[value=0]").prop("selected",false);
-				for(var i=0;i<$("#shopmore option").length;i++){
-					$(this.shopmore).each(function(key,value){					
-						if($("#shopmore option:eq("+i+")").val()==value.sno){
-							$("#shopmore option:eq("+i+")").attr("selected","selected");
-						}
-					});
-				}
-			}
-			$("#minmember").val(this.minmember);
-			$("#maxmember").val(this.maxmember);
+			$("#mno").val(this.mno);
+			$("#mno").attr("name","mno");
+			$("#name").val(this.name);
 			
-			$("#st_begin").val(this.st_begin);
-			$("#st_end").val(this.st_end);
-			$("#st_day").val(this.st_day);
-			
-			$("#clo_begin").val(this.clo_begin);
-			$("#clo_end").val(this.clo_end);
-			$("#clo_day").val(this.clo_day);
-			
-			$("#del_begin").val(this.del_begin);
-			$("#del_end").val(this.del_end);
-			$("#del_day").val(this.del_day);
-			
-			$("#sale_begin").val(this.sale_begin);
-			$("#sale_end").val(this.sale_end);
-			$("#sale_day").val(this.sale_day);
-			
-			if(this.display==true){
-				$("#display").attr("checked","checked");
-			}else{
-				$("#display").attr("checked",false);
-			}
-			if(this.strong==true){
-				$("#strong").attr("checked","checked");
-			}else{
-				$("#strong").attr("checked",false);
-			}
-			if(this.closed==true){
-				$("#closed").attr("checked","checked");
-			}else{
-				$("#closed").attr("checked",false);
-			}
-			if(this.deleted==true){
-				$("#deleted").attr("checked","checked");
-			}else{
-				$("#deleted").attr("checked",false);
-			}
 			if(this.sale==true){
 				$("#sale").attr("checked","checked");
 			}else{
@@ -177,7 +119,7 @@ function getAjax(cno){
 			}
 		});
 	});
-	$("#frm").attr("action","./Cook/Modify");
+	$("#frm").attr("action","./Member/Modify");
 }
 //사이드 메뉴 설정
 function openNav() {

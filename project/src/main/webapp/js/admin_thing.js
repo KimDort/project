@@ -63,11 +63,10 @@ function check(){
 	}
 	return true;
 }
-function deleteItem(tnonum){
+function deleteItem(tno, page, perPageNum, url){
 	if(confirm("정말 삭제하시겠습니까?")==true){
-		//location.href='http://happyrecipek.iptime.org:9090/administrator/Thing/Delete?tno='+tno;
-		$.get("http://happyrecipek.iptime.org:9090/administrator/Thing/Delete",{tno:tnonum,url:$("input[name='url']").val()})
-		window.location.reload();
+		location.href='http://happyrecipek.iptime.org:9090/administrator/Thing/Delete?tno='+tno+"&page="+page+"&perPageNum="+perPageNum
+		+"&url="+url;
 	}else{
 		return false;
 	}

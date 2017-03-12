@@ -20,4 +20,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="selectlist" resultType="ShopMoreThingVO">
 		SELECT * FROM ShopMoreThing WHERE sno=#{sno}
 	</select>
+	
+	<delete id="delete">
+		DELETE FROM ShopMoreThing WHERE sno=#{sno}
+	</delete>
 </mapper>

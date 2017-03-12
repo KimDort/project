@@ -210,9 +210,9 @@
   		<a href="http://happyrecipek.iptime.org:9090/administrator/CookBox?page=1&perPageNum=12">Cooking Class</a>
   		<a href="http://happyrecipek.iptime.org:9090/administrator/ShopBox?page=1&perPageNum=12">Shop</a>
   		<a href="http://happyrecipek.iptime.org:9090/administrator/ThingBox?page=1&perPageNum=12">Thing</a>
-  		<a href="#">Event</a>
-  		<a href="#">Notice</a>
-  		<a href="#">Member</a>
+  		<a href="http://happyrecipek.iptime.org:9090/administrator/EventBox?page=1&perPageNum=12">Event</a>
+  		<a href="http://happyrecipek.iptime.org:9090/administrator/NoticeTable?page=1&perPageNum=12">Notice</a>
+  		<a href="http://happyrecipek.iptime.org:9090/administrator/MemberTable?page=1&perPageNum=12">Member</a>
 	</div>
 	<section class="body-sec">
 		<div class="container">
@@ -364,7 +364,7 @@
 															<td>
 																<input type="button" value="DELETE"
 																				class="btn btn-default"
-																				onclick="deleteItem(${tlist.tno})">
+																				onclick="deleteItem(${tlist.tno}, ${pageMaker.cri.page }, ${pageMaker.cri.perPageNum },'ThingTable')">
 															</td>
 														</tr>
 														</c:forEach>														

@@ -34,5 +34,10 @@ public class ShopMoreDAOImpl implements ShopMoreDAO{
 		// TODO Auto-generated method stub
 		return session.selectList("com.mapper.shopmore.selectlist",sno);
 	}
+	@Override
+	public int delete(int sno) throws Exception {
+		// TODO Auto-generated method stub
+		return session.delete("com.mapper.shopmore.delete",sno);
+	}
 
 }

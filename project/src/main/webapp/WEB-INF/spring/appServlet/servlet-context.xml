@@ -30,7 +30,9 @@
   <!-- interceptor -->
   <beans:bean id="AuthInterceptor" class="com.project.interceptor.AuthInterceptor">
   </beans:bean>
-  <beans:bean id="LoginInterceptor" class="com.project.interceptor.LoginInterceptor">
+  <beans:bean id="LoginInterceptor" class="com.project.interceptor.LoginInterceptor2">
+  </beans:bean>
+  <beans:bean id="AdminAuthInterceptor" class="com.project.interceptor.AdminAuthInterceptor">
   </beans:bean>
   
   <interceptors>
@@ -44,7 +46,7 @@
   	</interceptor>
   	<interceptor>
   		<mapping path="/administrator/*"/>
-  		<beans:ref bean="AuthInterceptor"/>
+  		<beans:ref bean="AdminAuthInterceptor"/>
   	</interceptor>
   </interceptors>
 	<context:component-scan base-package="com.project.controller" />

@@ -94,7 +94,26 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		#{startDay},#{endDay}, #{salecost},
 		#{strong},#{closed}, #{deleted}, #{display}, #{sale}, #{file1}, #{cost})
 	</insert>
-	
+	<!-- display 여부 업데이트 -->
+	<update id="display">
+		UPDATE SHOP SET display=#{display} WHERE sno=#{sno}
+	</update>
+	<!-- 강조여부 업데이트 -->
+	<update id="strong">
+		UPDATE SHOP SET strong=#{strong} WHERE sno=#{sno}
+	</update>
+	<!-- 비공개여부 업데이트 -->
+	<update id="closed">
+		UPDATE SHOP SET closed=#{closed} WHERE sno=#{sno}
+	</update>
+	<!-- 삭제여부 업데이트 -->
+	<update id="deleted">
+		UPDATE SHOP SET deleted=#{deleted} WHERE sno=#{sno}
+	</update>
+	<!-- 세일여부 업데이트 -->
+	<update id="sale">
+		UPDATE SHOP SET sale=#{sale} WHERE sno=#{sno}
+	</update>
 	<select id="allList" resultType="ShopVO">
 		SELECT * FROM SHOP ORDER BY sno DESC
 	</select>
@@ -134,11 +153,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<update id="ShopUpdate">
 		UPDATE SHOP SET 
-		tno=#{tno}, title=#{title}, content=#{content}, startday=#{startday}, endday=#{endday},
+		tno=#{tno}, title=#{title}, content=#{content}, 
 		cost=#{cost}, salecost=#{salecost}, strong=#{strong}, st_begin=#{st_begin}, st_day=#{st_day}, closed=#{closed}, clo_begin=#{clo_begin},
 		clo_end=#{clo_end}, clo_day=#{clo_day}, deleted=#{deleted}, del_begin=#{del_begin}, del_end=#{del_end}, del_day=#{del_day},
-		sale=#{sale}, sale_begin=#{sale_begin}, sale_end=#{sale_end}, sale_day=#{sale_day}, display=#{display}, file1=#{file1},
-		size1=#{size1}, thumb=#{thumb} 
+		sale=#{sale}, sale_begin=#{sale_begin}, sale_end=#{sale_end}, sale_day=#{sale_day}, display=#{display}, file1=#{file1}
 		WHERE sno=#{sno}
 	</update>
+	
+	<!-- sale인 항목 가져오기 -->
+	<select id="selectSale" resultType="ShopVO">
+		SELECT * FROM SHOP WHERE SALE='Y'
+	</select>
 </mapper>

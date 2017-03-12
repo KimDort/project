@@ -110,4 +110,10 @@ public class CookDAOImpl implements CookDAO {
 		// TODO Auto-generated method stub
 		return session.update("com.mapper.cook.sale",vo);
 	}
+
+	@Override
+	public List<CookVO> selectSale() throws Exception {
+		// TODO Auto-generated method stub
+		return session.selectList("com.mapper.cook.selectSale");
+	}
 }

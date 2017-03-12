@@ -141,9 +141,9 @@
   		<a href="http://happyrecipek.iptime.org:9090/administrator/CookBox?page=1&perPageNum=12">Cooking Class</a>
   		<a href="http://happyrecipek.iptime.org:9090/administrator/ShopBox?page=1&perPageNum=12">Shop</a>
   		<a href="http://happyrecipek.iptime.org:9090/administrator/ThingBox?page=1&perPageNum=12">Thing</a>
-  		<a href="#">Event</a>
-  		<a href="#">Notice</a>
-  		<a href="#">Member</a>
+  		<a href="http://happyrecipek.iptime.org:9090/administrator/EventBox?page=1&perPageNum=12">Event</a>
+  		<a href="http://happyrecipek.iptime.org:9090/administrator/NoticeTable?page=1&perPageNum=12">Notice</a>
+  		<a href="http://happyrecipek.iptime.org:9090/administrator/MemberTable?page=1&perPageNum=12">Member</a>
 	</div>
 	<section class="body-sec">
 		<div class="container">
@@ -161,12 +161,12 @@
 										<div class="col-md-12">
 											<ul class="nav nav-tabs" style="float: left;">
 												<li class="active">
-													<a href="http://happyrecipek.iptime.org:9090/administrator/CookBox?page=1">
+													<a href="http://happyrecipek.iptime.org:9090/administrator/CookBox?page=1&perPageNum=12">
 														<span class="glyphicon glyphicon-th-large"></span>
 													</a>
 												</li>
 												<li>
-													<a href="http://happyrecipek.iptime.org:9090/administrator/CookTable?page=1"> 
+													<a href="http://happyrecipek.iptime.org:9090/administrator/CookTable?page=1&perPageNum=12"> 
 														<span class="glyphicon glyphicon-list"></span>
 													</a>
 												</li>
@@ -425,7 +425,7 @@
 																		style="width: 227px; height: 227px;">
 																	<div class="row">
 																		<input type="button" value="DELETE" class="btn btn-default"
-																		onclick="deleteItem(${ckList.cno})">
+																		onclick="deleteItem(${ckList.cno}, ${pageMaker.cri.page }, ${pageMaker.cri.perPageNum },'CookBox')">
 																		<input type="button" value="MODIFY" class="btn btn-default"
 																		onclick="getAjax(${ckList.cno})" data-toggle="modal" data-target="#cookingadd">
 																	</div>

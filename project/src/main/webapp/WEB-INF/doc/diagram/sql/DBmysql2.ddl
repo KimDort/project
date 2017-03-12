@@ -19,6 +19,7 @@ select * from thing where ctgroup=6 and category=1;
 select * from(select * from thing as th
 join shopmorething as sht on th.tno=sht.tno)th.tno=1;
 select * from thing where tno=(select tno from shopmorething where sno=13);
+drop table notice;
 
 drop table shoporder;
 /**********************************/
@@ -91,8 +92,17 @@ CREATE TABLE NOTICE(
 		endDay                        		VARCHAR(1000)		 NULL  COMMENT '게시만료일',
 		readCount                     		INT(38)		 DEFAULT 0		 NULL  COMMENT '조회수',
 		strong                        		CHAR(1)		 NULL  COMMENT '강조',
+		st_begin                      		VARCHAR(100)		 NULL  COMMENT '강조시작',
+		st_end                        		VARCHAR(100)		 NULL  COMMENT '강조끝',
+		st_day                        		VARCHAR(100)		 NULL  COMMENT '강조등록후날짜',
 		closed                        		CHAR(1)		 NULL  COMMENT '비공개',
+		clo_begin                     		VARCHAR(100)		 NULL  COMMENT '비공개시작',
+		clo_end                       		VARCHAR(100)		 NULL  COMMENT '비공개끝',
+		clo_day                       		VARCHAR(100)		 NULL  COMMENT '비공개등록후날짜',
 		deleted                       		CHAR(1)		 NULL  COMMENT '삭제',
+		del_begin                     		VARCHAR(100)		 NULL  COMMENT '삭제시작',
+		del_end                       		VARCHAR(100)		 NULL  COMMENT '삭제끝',
+		del_day                       		VARCHAR(100)		 NULL  COMMENT '등록후삭제날짜',
 		display                       		CHAR(1)		 NULL  COMMENT '화면표시여부',
 		file1                         		VARCHAR(1000)		 NULL  COMMENT '원본파일',
 		size1                         		INT(10)		 NULL  COMMENT '파일사이즈',
@@ -101,6 +111,8 @@ CREATE TABLE NOTICE(
 
 ALTER TABLE NOTICE ADD CONSTRAINT IDX_NOTICE_PK PRIMARY KEY (nno);
 ALTER TABLE NOTICE ADD CONSTRAINT IDX_NOTICE_FK0 FOREIGN KEY (writer) REFERENCES MEMBER (id);
+
+
 
 drop table event;
 /**********************************/
@@ -116,10 +128,25 @@ CREATE TABLE event(
 		startday                      		VARCHAR(1000)		 NULL  COMMENT '이벤트시작일',
 		endday                        		VARCHAR(1000)		 NULL  COMMENT '이벤트종료일',
 		strong                        		CHAR(1)		 DEFAULT 'N'		 NULL  COMMENT '강조',
+		st_begin                      		VARCHAR(100)		 NULL  COMMENT '강조시작',
+		st_end                        		VARCHAR(100)		 NULL  COMMENT '강조끝',
+		st_day                        		VARCHAR(100)		 NULL  COMMENT '등록후날짜',
 		closed                        		CHAR(1)		 DEFAULT 'N'		 NULL  COMMENT '비공개',
+		clo_begin                     		VARCHAR(100)		 NULL  COMMENT '비공개시작',
+		clo_end                       		VARCHAR(100)		 NULL  COMMENT '비공개끝',
+		clo_day                       		VARCHAR(100)		 NULL  COMMENT '등록후날짜',
 		banner                        		CHAR(1)		 DEFAULT 'N'		 NULL  COMMENT '배너표시여부',
-		quit                          		CHAR(1)		 DEFAULT 'N'		 NULL  COMMENT '종료여부',
+		banner_begin                  		VARBINARY(100)		 NULL  COMMENT '배너시작',
+		banner_end                    		VARCHAR(100)		 NULL  COMMENT '배너종료',
+		banner_day                    		VARCHAR(100)		 NULL  COMMENT '등록후날짜',
+		quit                          		CHAR(1)		 DEFAULT 'N'		 NULL  COMMENT '이벤트종료여부',
+		quit_begin                    		VARCHAR(100)		 NULL  COMMENT '종료시작',
+		quit_end                      		VARCHAR(100)		 NULL  COMMENT '종료끝',
+		quit_day                      		VARCHAR(100)		 NULL  COMMENT '등록후날짜',
 		deleted                       		CHAR(1)		 DEFAULT 'N'		 NULL  COMMENT '삭제여부',
+		del_begin                     		VARCHAR(100)		 NULL  COMMENT '삭제시작',
+		del_end                       		VARCHAR(100)		 NULL  COMMENT '삭제끝',
+		del_day                       		VARCHAR(100)		 NULL  COMMENT '등록후날짜',
 		display                       		CHAR(1)		 NULL  COMMENT '화면표시여부',
 		file1                         		VARCHAR(1000)		 NULL  COMMENT '원본이미지파일',
 		size1                         		INT(10)		 NULL  COMMENT '원본파일사이즈',
@@ -128,13 +155,12 @@ CREATE TABLE event(
 		size2                         		INT(10)		 NULL  COMMENT '배너사이즈',
 		thumb2                        		VARCHAR(1000)		 NULL  COMMENT '배너카피',
 		saleshop                      		INT(38)		 NULL  COMMENT '세일상품',
-		salecook                      		INT(38)		 NULL  COMMENT '세일쿠킹클래스'
+		salecook                      		INT(38)		 NULL  COMMENT '세일쿠킹클래스',
+		salecost                      		INT(38)		 NULL  COMMENT '세일가격'
 ) COMMENT='이벤트';
 
 ALTER TABLE event ADD CONSTRAINT IDX_event_PK PRIMARY KEY (eno);
 ALTER TABLE event ADD CONSTRAINT IDX_event_FK0 FOREIGN KEY (writer) REFERENCES MEMBER (id);
-ALTER TABLE event ADD CONSTRAINT IDX_event_FK1 FOREIGN KEY (saleshop) REFERENCES SHOP (sno);
-ALTER TABLE event ADD CONSTRAINT IDX_event_FK2 FOREIGN KEY (salecook) REFERENCES COOK (cno);
 
 drop table cook;
 drop table cookmorething;

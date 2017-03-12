@@ -81,4 +81,28 @@ public int maxNum() throws Exception {
 	return dao.maxNum();
 }
 
+@Override
+public int modify(NoticeVO vo) throws Exception {
+	// TODO Auto-generated method stub
+	return dao.modify(vo);
+}
+
+@Override
+public int checkClosed(NoticeVO vo) throws Exception {
+	// TODO Auto-generated method stub
+	return dao.closedCheck(vo);
+}
+
+@Override
+public int checkDeleted(NoticeVO vo) throws Exception {
+	// TODO Auto-generated method stub
+	return dao.deletedCheck(vo);
+}
+
+@Override
+public int delete(int nno) throws Exception {
+	// TODO Auto-generated method stub
+	return dao.delete(nno);
+}
+
 }

@@ -80,4 +80,40 @@ public class ShopServiceImpl implements ShopService {
 		// TODO Auto-generated method stub
 		return dao.maxNum();
 	}
+
+	@Override
+	public int delete(int sno) throws Exception {
+		// TODO Auto-generated method stub
+		return dao.delete(sno);
+	}
+
+	@Override
+	public int modify(ShopVO vo) throws Exception {
+		// TODO Auto-generated method stub
+		return dao.modify(vo);
+	}
+
+	@Override
+	public int checkClosed(ShopVO vo) throws Exception {
+		// TODO Auto-generated method stub
+		return dao.closedCheck(vo);
+	}
+
+	@Override
+	public int checkDeleted(ShopVO vo) throws Exception {
+		// TODO Auto-generated method stub
+		return dao.deletedCheck(vo);
+	}
+
+	@Override
+	public int checkSale(ShopVO vo) throws Exception {
+		// TODO Auto-generated method stub
+		return dao.saleCheck(vo);
+	}
+
+	@Override
+	public List<ShopVO> selectSale() throws Exception {
+		// TODO Auto-generated method stub
+		return dao.selectSale();
+	}
 }

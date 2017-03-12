@@ -16,5 +16,9 @@ public interface NoticeDAO {
   public List<NoticeVO> allList()throws Exception; 
   public int displayCheck(NoticeVO vo)throws Exception;
   public int strongCheck(NoticeVO vo)throws Exception;
+  public int closedCheck(NoticeVO vo)throws Exception;
+  public int deletedCheck(NoticeVO vo)throws Exception;
   public int maxNum()throws Exception;
+  public int modify(NoticeVO vo)throws Exception;
+  public int delete(int nno)throws Exception;
 }

@@ -111,4 +111,10 @@ public int checkSale(CookVO vo) throws Exception {
 	return dao.saleCheck(vo);
 }
 
+@Override
+public List<CookVO> selectSale() throws Exception {
+	// TODO Auto-generated method stub
+	return dao.selectSale();
+}
+
 }

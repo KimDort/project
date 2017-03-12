@@ -6,12 +6,6 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<!-- calendar start -->
-<script type="text/javascript"
-	src="https://yui-s.yahooapis.com/2.9.0/build/yahoo-dom-event/yahoo-dom-event.js"></script>
-<script type="text/javascript"
-	src="https://yui-s.yahooapis.com/2.9.0/build/calendar/calendar-min.js"></script>
-<!-- calendar end -->
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script
@@ -19,7 +13,7 @@
 <link rel="stylesheet"
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <link href="../css/style.css" rel="Stylesheet" type="text/css">
-<script type="text/javascript" src="../js/admin_cook.js"></script>
+<script type="text/javascript" src="../js/admin_event.js"></script>
 <script type="text/javascript" src="../js/jquery.number.js"></script>
 <script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
 
@@ -27,18 +21,30 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script type="text/JavaScript">
+	var shopSale=new Array();
+	var cookSale=new Array();
+
+	<c:forEach items="${shopSaleList}" var="list">
+		var map={"num":'${list.sno}',"text":'${list.title}'};
+		shopSale.push(map);
+	</c:forEach>
+	<c:forEach items="${cookSaleList}" var="list">
+		var map={"num":'${list.cno}',"text":'${list.title}'};
+		cookSale.push(map);
+	</c:forEach>
+
 	window.onload = function() {
 		$.ajaxSetup({dataType:"text"});
-		CKEDITOR.replace('content'); // Cooking Class<TEXTAREA>태그 id 값 
+		CKEDITOR.replace('content'); // <TEXTAREA>태그 id 값 
 	};
 	
 	$(document).ready(function(){
-		var cnoIndex=$("input[id='listcno']");
+		var enoIndex=$("input[id='listeno']");
 		var result = '${msg}';
 		if (result == 'SUCCESS') {
 		  alert("요청이 정상적으로 처리되었습니다.");
 		}		
-		$("#cooksubmit").on("click",function(){
+		$("#eventsubmit").on("click",function(){
 			if(check()==true){
 				$("#frm").submit();
 			}	
@@ -46,17 +52,17 @@
 		
 		$("#AddItem").on("click",function(){
 			$("form[id='frm']")[0].reset();
-			$("#frm").attr("action","./Cook/Create")
+			$("#frm").attr("action","./Event/Create")
 			CKEDITOR.instances.content.setData();
 		});
 		
 		$("select[id='strong']").on("change",function(){
 			var index=$("select[id='strong']").index(this);
 			var strong=this.value;
-			var cno=cnoIndex[index].value;		
+			var eno=enoIndex[index].value;		
 			$.ajax({
 				type:'put',
-				url:'/administrator/Cook/Strong/Update/'+cno,
+				url:'/administrator/Event/Strong/Update/'+eno,
 				headers :{
 					"Content-type":"application/json",
 					"X-HTTP-Method-Override":"PUT"
@@ -66,7 +72,7 @@
 				success:function(result){
 					console.log("result: "+result);
 					if(result== 'SUCCESS'){
-						alert(cno+" 번째 게시물의 강조 여부를 "+strong+"로 변경완료 하였습니다.");
+						alert(eno+" 번째 게시물의 강조 여부를 "+strong+"로 변경완료 하였습니다.");
 					}
 				}
 			});
@@ -75,10 +81,10 @@
 		$("select[id='closed']").on("change",function(){
 			var index=$("select[id='closed']").index(this);
 			var closed=this.value;
-			var cno=cnoIndex[index].value;		
+			var eno=enoIndex[index].value;		
 			$.ajax({
 				type:'put',
-				url:'/administrator/Cook/Closed/Update/'+cno,
+				url:'/administrator/Event/Closed/Update/'+eno,
 				headers :{
 					"Content-type":"application/json",
 					"X-HTTP-Method-Override":"PUT"
@@ -88,7 +94,51 @@
 				success:function(result){
 					console.log("result: "+result);
 					if(result== 'SUCCESS'){
-						alert(cno+" 번째 게시물의 강조 여부를 "+closed+"로 변경완료 하였습니다.");
+						alert(eno+" 번째 게시물의 강조 여부를 "+closed+"로 변경완료 하였습니다.");
+					}
+				}
+			});
+		});
+		
+		$("select[id='banner']").on("change",function(){
+			var index=$("select[id='banner']").index(this);
+			var banner=this.value;
+			var eno=enoIndex[index].value;		
+			$.ajax({
+				type:'put',
+				url:'/administrator/Event/Banner/Update/'+eno,
+				headers :{
+					"Content-type":"application/json",
+					"X-HTTP-Method-Override":"PUT"
+				},
+				data : JSON.stringify({banner:banner}),
+				dataType:'text',
+				success:function(result){
+					console.log("result: "+result);
+					if(result== 'SUCCESS'){
+						alert(eno+" 번째 게시물의 강조 여부를 "+banner+"로 변경완료 하였습니다.");
+					}
+				}
+			});
+		});
+		
+		$("select[id='quit']").on("change",function(){
+			var index=$("select[id='quit']").index(this);
+			var quit=this.value;
+			var eno=enoIndex[index].value;		
+			$.ajax({
+				type:'put',
+				url:'/administrator/Event/Quit/Update/'+eno,
+				headers :{
+					"Content-type":"application/json",
+					"X-HTTP-Method-Override":"PUT"
+				},
+				data : JSON.stringify({quit:quit}),
+				dataType:'text',
+				success:function(result){
+					console.log("result: "+result);
+					if(result== 'SUCCESS'){
+						alert(eno+" 번째 게시물의 강조 여부를 "+quit+"로 변경완료 하였습니다.");
 					}
 				}
 			});
@@ -97,10 +147,10 @@
 		$("select[id='deleted']").on("change",function(){
 			var index=$("select[id='deleted']").index(this);
 			var deleted=this.value;
-			var cno=cnoIndex[index].value;		
+			var eno=enoIndex[index].value;		
 			$.ajax({
 				type:'put',
-				url:'/administrator/Cook/Deleted/Update/'+cno,
+				url:'/administrator/Event/Deleted/Update/'+eno,
 				headers :{
 					"Content-type":"application/json",
 					"X-HTTP-Method-Override":"PUT"
@@ -110,29 +160,7 @@
 				success:function(result){
 					console.log("result: "+result);
 					if(result== 'SUCCESS'){
-						alert(cno+" 번째 게시물의 강조 여부를 "+deleted+"로 변경완료 하였습니다.");
-					}
-				}
-			});
-		});
-		
-		$("select[id='sale']").on("change",function(){
-			var index=$("select[id='sale']").index(this);
-			var sale=this.value;
-			var cno=cnoIndex[index].value;		
-			$.ajax({
-				type:'put',
-				url:'/administrator/Cook/Sale/Update/'+cno,
-				headers :{
-					"Content-type":"application/json",
-					"X-HTTP-Method-Override":"PUT"
-				},
-				data : JSON.stringify({sale:sale}),
-				dataType:'text',
-				success:function(result){
-					console.log("result: "+result);
-					if(result== 'SUCCESS'){
-						alert(cno+" 번째 게시물의 강조 여부를 "+sale+"로 변경완료 하였습니다.");
+						alert(eno+" 번째 게시물의 강조 여부를 "+deleted+"로 변경완료 하였습니다.");
 					}
 				}
 			});
@@ -141,10 +169,10 @@
 		$("select[id='display']").on("change",function(){
 			var index=$("select[id='display']").index(this);
 			var display=this.value;
-			var cno=cnoIndex[index].value;		
+			var eno=enoIndex[index].value;		
 			$.ajax({
 				type:'put',
-				url:'/administrator/Cook/Display/Update/'+cno,
+				url:'/administrator/Event/Display/Update/'+eno,
 				headers :{
 					"Content-type":"application/json",
 					"X-HTTP-Method-Override":"PUT"
@@ -154,12 +182,39 @@
 				success:function(result){
 					console.log("result: "+result);
 					if(result== 'SUCCESS'){
-						alert(cno+" 번째 게시물의 강조 여부를 "+display+"로 변경완료 하였습니다.");
+						alert(eno+" 번째 게시물의 강조 여부를 "+display+"로 변경완료 하였습니다.");
 					}
 				}
 			});
 		});
+		
+		$("#cookSaleList").on("change",function(){
+			if($(this).val() !=0 && $("#shopSaleList").val()!=0){
+				alert("세일 리스트는 하나만 선택가능합니다.");
+				resetSaleList();	
+			}
+		});
+		$("#shopSaleList").on("change",function(){
+			if($(this).val() !=0 && $("#cookSaleList").val()!=0){
+				alert("세일 리스트는 하나만 선택가능합니다.");
+				resetSaleList();	
+			}
+		});
 	});
+	
+	function resetSaleList(){
+		$("#cookSaleList").empty();
+		$("#shopSaleList").empty();
+		$("#cookSaleList").append("<option value='0'>없음</option>");
+		$("#shopSaleList").append("<option value='0'>없음</option>");
+		for(var i=0;i<shopSale.length;i++){
+			$("#shopSaleList").append("<option value='"+shopSale[i].num+"'>"+shopSale[i].text+"</option>");
+			
+		};
+		for(var i=0;i<cookSale.length;i++){
+			$("#cookSaleList").append("<option value='"+cookSale[i].num+"'>"+cookSale[i].text+"</option>");
+		};
+	};
 </script>
 <style type="text/css">
 .sidenav {
@@ -273,29 +328,32 @@
 										<div class="col-md-12">
 											<ul class="nav nav-tabs" style="float: left;">
 												<li>
-													<a href="http://happyrecipek.iptime.org:9090/administrator/CookBox?page=1&perPageNum=12">
+													<a href="http://happyrecipek.iptime.org:9090/administrator/EventBox?page=1&perPageNum=12">
 														<span class="glyphicon glyphicon-th-large"></span>
 													</a>
 												</li>
 												<li class="active">
-													<a href="http://happyrecipek.iptime.org:9090/administrator/CookTable?page=1&perPageNum=12"> 
+													<a href="http://happyrecipek.iptime.org:9090/administrator/EventTable?page=1&perPageNum=12"> 
 														<span class="glyphicon glyphicon-list"></span>
 													</a>
 												</li>
 											</ul>
 											<input type="button" class="form-control"
 												style="width: 30%; display: inline; float: right;"
-												value="Add Cooking Class" id="AddItem" data-toggle="modal"
-												data-target="#cookingadd">
+												value="Add Event" id="AddItem" data-toggle="modal"
+												data-target="#eventadd">
 										</div>
-										<form id="frm" enctype="multipart/form-data" method="post" action="./Cook/Create">
+										<form id="frm" enctype="multipart/form-data" method="post" action="./Event/Create">
+											<input type="hidden" name="page" value="${pageMaker.cri.page }">
+											<input type="hidden" name="perPageNum" value="${pageMaker.cri.perPageNum }">
+											<input type="hidden" name="url" value="EventBox">
 											<!-- 모달 시작 -->
-											<div class="modal fade" id="cookingadd" role="dialog">
+											<div class="modal fade" id="eventadd" role="dialog">
 												<div class="modal-dialog modal-lg">
 													<div class="modal-content">
 														<div class="modal-header">
 															<button type="button" class="close" data-dismiss="modal">&times;</button>
-															<h4 class="modal-title">Add Cooking Class</h4>
+															<h4 class="modal-title">Add Event</h4>
 														</div>
 														<!-- 모달 바디 -->
 														<div class="modal-body">
@@ -305,7 +363,7 @@
 																		<label for="writer">WRITER : </label>
 																		<input type="text" value="${sessionScope.MemberVO.id }"	name="writer" readonly="readonly"
 																			class="form-control">
-																		<input type="hidden" id="cno">
+																		<input type="hidden" id="eno">
 																	</div>
 																	<div class="form-group">
 																		<label for="title">TITLE :</label> 
@@ -320,85 +378,32 @@
 																		<input type="file" id="file" name="file1MF" class="form-control">
 																	</div>
 																	<div class="form-group">
-																		<div id="cal1Container">
-																			<script type="text/javascript"
-																				src="../js/calendar.js"></script>
-																		</div>
+																		<label for="file">BANNER IMAGE :</label>
+																		<input type="file" id="file" name="file1MF" class="form-control">
 																	</div>
 																	<div class="form-group">
-																		<div id="dates">
-																			<p>
-																				<label for="startday">ASK START:</label> <input
-																					type="text" name="askstart" id="ask_in"
-																					class="form-control" readonly="readonly">
-																			</p>
-																			<p>
-																				<label for="endday">AKS END:</label> <input
-																					type="text" name="askend" id="ask_out"
-																					class="form-control" readonly="readonly">
-																			</p>
-																		</div>
-																	</div>
-																	<div class="form-group">
-																		<div id="cal2Container"></div>
-																	</div>
-																	<div class="form-group">
-																		<div id="dates">
-																			<p>
-																				<label for="startday">STARTDAY:</label> <input
-																					type="text" name="startday" id="in"
-																					class="form-control" readonly="readonly">
-																			</p>
-																			<p>
-																				<label for="endday">ENDDAY:</label> <input
-																					type="text" name="endday" id="out"
-																					class="form-control" readonly="readonly">
-																			</p>
-																		</div>
-																	</div>
-																	<div class="form-group">
-																		<label for="starttime">START TIME:</label> 
-																		<input type="text" name="starttime" class="form-control" placeholder="ex) 00:00"
-																		id="starttime">
-																	</div>
-
-																	<div class="form-group">
-																		<label for="endtime">END TIME:</label> 
-																		<input type="text" name="endtime" class="form-control" placeholder="ex) 00:00"
-																		id="endtime">
-																	</div>
-																	<div class="form-group">
-																		<label>COST</label> 
-																		<input type="text" name="cost"	class="form-control" id="cost">
-																	</div>
-
-																	<div class="form-group">
-																		<label>SALE COST</label>
-																		<input type="text"	name="salecost" class="form-control" id="salecost">
-																	</div>
-																	<div class="form-group">
-																		<label>SOME READY</label>
-																		<input type="text" name="someready" class="form-control" id="someready">
-																	</div>
-																	<div class="form-group">
-																		<label>ADD MORE SHOP</label> 
-																		<select	class="form-control" id="shopmore" multiple="multiple" name="shopmore">
-																		<option value="0" selected="selected">없음</option>
-																		<c:forEach items="${shop }" var="slist">
-																			<option value="${slist.sno }">${slist.title }</option>
-																		</c:forEach>
+																		<label for="saleList">COOK SALE LIST</label>
+																		<select id="cookSaleList" name="salecook" class="form-control">
+																			<option value="0">없음</option>
+																			<c:forEach items="${cookSaleList }" var="list">
+																				<option value="${list.cno }">${list.title}</option>																				
+																			</c:forEach>
 																		</select>
 																	</div>
 																	<div class="form-group">
-																		<label>Min Member</label>
-																		<input type="text" name="minmember" class="form-control" id="minmember">
+																		<label for="saleList">SHOP SALE LIST</label>
+																		<select id="shopSaleList" name="saleshop" class="form-control">
+																			<option value="0">없음</option>
+																			<c:forEach items="${shopSaleList }" var="list">
+																				<option value="${list.sno }">${list.title}</option>																				
+																			</c:forEach>
+																		</select>
 																	</div>
 																	<div class="form-group">
-																		<label>Max Member</label>
-																		<input type="text" name="maxmember" class="form-control" id="maxmember">
+																		<label for="saleList">SALE COST</label>
+																		<input type="text" class="form-control" name="salecost" id="salecost">
 																	</div>
-																</div>
-																<div class="form-group" style="width: 100%;">
+																	<div class="form-group" style="width: 100%;">
 																	<table class="table">
 																		<thead>
 																			<tr>
@@ -486,36 +491,60 @@
 																					maxlength="5" id="del_day">
 																				</td>
 																			</tr>
+																			<tr class="info">
+																				<th colspan="5">배너 노출 여부 결정 DISPLAY YES일 때만 /기간 설정 가능 / 등록일로부터
+																					몇일까지만 배너 노출 가능
+																				</th>
+																			</tr>
+																			<tr class="info">
+																				<th>BANNER</th>
+																				<td>
+																					<input type="checkbox" name="banner" value='Y' class="checkbox" id="banner">
+																				</td>
+																				<td>
+																					<input type="text" class="form-control"	name="banner_begin" placeholder="ex) 12/16 = MONTH/DAY" 
+																					maxlength="5" id="banner_begin">
+																				</td>
+																				<td>
+																					<input type="text" class="form-control" name="banner_end" placeholder="ex) 12/16 = MONTH/DAY"
+																					maxlength="5" id="banner_end">
+																				</td>
+																				<td>
+																					<input type="text" class="form-control"	name="banner_day"	placeholder="Register Day later Day Only Number"
+																					maxlength="5" id="banner_day">
+																				</td>
+																			</tr>
 																			<tr class="success">
-																				<th colspan="5">세일 여부 결정 YES /기간 설정 가능 / 등록일로부터
-																					몇일까지만 세일 설정 가능
+																				<th colspan="5">이벤트 종료 여부 결정 DISPLAY=YES OR BANNER=YES 일 경우 DISPLAY=NO OR BANNER=NO 변경
+																					원하는 기간 설정 가능 날짜 지정시 이후 종료
 																				</th>
 																			</tr>
 																			<tr class="success">
-																				<th>SALE</th>
+																				<th>QUIT</th>
 																				<td>
-																					<input type="checkbox" name="sale" value='Y' class="checkbox" id="sale">
+																					<input type="checkbox" name="quit" value='Y' class="checkbox" id="quit">
 																				</td>
 																				<td>
-																					<input type="text" class="form-control"	name="sale_begin" placeholder="ex) 12/16 = MONTH/DAY" 
-																					maxlength="5" id="sale_begin">
+																					<input type="text" class="form-control"	name="quit_begin" placeholder="ex) 12/16 = MONTH/DAY" 
+																					maxlength="5" id="quit_begin">
 																				</td>
 																				<td>
-																					<input type="text" class="form-control" name="sale_end" placeholder="ex) 12/16 = MONTH/DAY"
-																					maxlength="5" id="sale_end">
+																					<input type="text" class="form-control" name="quit_end" placeholder="ex) 12/16 = MONTH/DAY"
+																					maxlength="5" id="quit_end">
 																				</td>
 																				<td>
-																					<input type="text" class="form-control"	name="sale_day"	placeholder="Register Day later Day Only Number"
-																					maxlength="5" id="sale_day">
+																					<input type="text" class="form-control"	name="quit_day"	placeholder="Register Day later Day Only Number"
+																					maxlength="5" id="quit_day">
 																				</td>
 																			</tr>
 																		</tbody>
 																	</table>
+																	</div>
 																</div>
 															</div>
 														</div>
 														<div class="modal-footer">
-															<input type="button" value="Add" class="btn btn-default" id="cooksubmit">
+															<input type="button" value="Add" class="btn btn-default" id="eventsubmit">
 															<button type="button" class="btn btn-default" data-dismiss="modal" id="close">Close</button>
 														</div>
 													</div>
@@ -526,46 +555,31 @@
 									</div>
 									<div class="row">
 										<div class="tab-content">
-											<div id="cookboxlist" class="tab-pane fade in active">
-												<table class="table table-striped" id="cookTlist">
+											<div id="eventboxlist" class="tab-pane fade in active">
+												<table class="table table-striped" id="eventTlist">
 													<thead>
 														<tr>
 															<th>No.</th>
 															<th>Title</th>
-															<th>RegDate</th>
-															<th>Ask Start</th>
-															<th>Ask End</th>
-															<th>Start Day</th>
-															<th>End Day</th>
-															<th>Start Time</th>
-															<th>End Time</th>
-															<th>Cost</th>
-															<th>Sale Cost</th>
-															<th>Total Cost</th>
+															<th>RegDate</th>															
+															<th>Sale Cost</th>															
 															<th>Strong</th>
 															<th>Closed</th>
+															<th>Banner</th>
+															<th>Quit</th>
 															<th>Deleted</th>
-															<th>Sale</th>
 															<th>Display</th>
 															<th>Modify</th>
 															<th>Delete</th>
 														</tr>
 													</thead>
 													<tbody>
-														<c:forEach items="${cook }" var="tlist">
+														<c:forEach items="${event }" var="tlist">
 														<tr>
-															<td>${tlist.cno }<input type="hidden" value=${tlist.cno } id="listcno"></td>
+															<td>${tlist.eno }<input type="hidden" value=${tlist.eno } id="listeno"></td>
 															<td>${tlist.title }</td>
 															<td>${tlist.regdate }</td>
-															<td>${tlist.askstart }</td>
-															<td>${tlist.askend }</td>
-															<td>${tlist.startday }</td>
-															<td>${tlist.endday }</td>
-															<td>${tlist.starttime }</td>
-															<td>${tlist.endtime }</td>
-															<td>${tlist.cost }</td>
 															<td>${tlist.salecost }</td>
-															<td>${tlist.cost - tlist.salecost }</td>
 															<td>
 																<select name="strong" class="form-control" id="strong">
 																	<option value='Y' 
@@ -587,6 +601,26 @@
 																</select>
 															</td>
 															<td>
+																<select name="banner" class="form-control" id="banner">
+																	<option value='Y' 
+																	<c:out value="${tlist.banner eq 'Y'.charAt(0)?'selected=selected':'' }"/>>
+																	Y</option>
+																	<option value='N'
+																	<c:out value="${tlist.banner eq 'N'.charAt(0)?'selected=selected':'' }"/>>
+																	N</option>
+																</select>
+															</td>
+															<td>
+																<select name="quit" class="form-control" id="quit">
+																	<option value='Y' 
+																	<c:out value="${tlist.quit eq 'Y'.charAt(0)?'selected=selected':'' }"/>>
+																	Y</option>
+																	<option value='N'
+																	<c:out value="${tlist.quit eq 'N'.charAt(0)?'selected=selected':'' }"/>>
+																	N</option>
+																</select>
+															</td>
+															<td>
 																<select name="deleted" class="form-control" id="deleted">
 																	<option value='Y' 
 																	<c:out value="${tlist.deleted eq 'Y'.charAt(0)?'selected=selected':'' }"/>>
@@ -595,17 +629,7 @@
 																	<c:out value="${tlist.deleted eq 'N'.charAt(0)?'selected=selected':'' }"/>>
 																	N</option>
 																</select>
-															</td>
-															<td>
-																<select name="sale" class="form-control" id="sale">
-																	<option value='Y' 
-																	<c:out value="${tlist.sale eq 'Y'.charAt(0)?'selected=selected':'' }"/>>
-																	Y</option>
-																	<option value='N'
-																	<c:out value="${tlist.sale eq 'N'.charAt(0)?'selected=selected':'' }"/>>
-																	N</option>
-																</select>
-															</td>
+															</td>															
 															<td>
 																<select name="display" class="form-control" id="display">
 																	<option value='Y' 
@@ -618,11 +642,11 @@
 															</td>
 															<td>
 																<input type="button" value="M" class="btn btn-default"
-																		onclick="getAjax(${tlist.cno})" data-toggle="modal" data-target="#cookingadd">
+																		onclick="getAjax(${tlist.eno})" data-toggle="modal" data-target="#eventadd">
 															</td>
 															<td>
 																<input type="button" value="D" class="btn btn-default"
-																		onclick="deleteItem(${tlist.cno}, ${pageMaker.cri.page }, ${pageMaker.cri.perPageNum },'CookTable')">
+																		onclick="deleteItem(${tlist.eno}, ${pageMaker.cri.page }, ${pageMaker.cri.perPageNum },'EventTable')">
 															</td>
 														</tr>
 														</c:forEach>														
@@ -634,18 +658,18 @@
 																<ul class="pagination">
 																	<c:if test="${pageMaker.prev }">
 																		<li>
-																			<a href="CookTable?page=${pageMaker.startPage-1 }">&laquo;</a>
+																			<a href="EventTable?page=${pageMaker.startPage-1 }">&laquo;</a>
 																		</li>
 																	</c:if>
 																	<c:forEach begin="${pageMaker.startPage }" end="${pageMaker.endPage }" var="idx">
 																		<li
 																			<c:out value="${pageMaker.cri.page==idx?'class=active':''}"/>>
-																			<a href="CookTable?page=${idx }">${idx }</a>
+																			<a href="EventTable?page=${idx }">${idx }</a>
 																		</li>
 																	</c:forEach>
 																	<c:if test="${pageMaker.next && pageMaker.endPage > 0 }">
 																		<li>
-																			<a href="CookTable?page=${pageMaker.startPage+1 }">&raquo;</a>
+																			<a href="EventTable?page=${pageMaker.startPage+1 }">&raquo;</a>
 																		</li>
 																	</c:if>
 																</ul>

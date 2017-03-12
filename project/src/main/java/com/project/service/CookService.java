@@ -22,4 +22,5 @@ public interface CookService {
   public int maxNum()throws Exception;
   public int delete(int cno)throws Exception;
   public int modify(CookVO vo)throws Exception;
+  public List<CookVO> selectSale()throws Exception;
 }

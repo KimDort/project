@@ -16,5 +16,9 @@ public interface NoticeService {
   public List<NoticeVO> listAll()throws Exception;
   public int checkDisplay(NoticeVO vo)throws Exception;
   public int checkStrong(NoticeVO vo)throws Exception;
+  public int checkClosed(NoticeVO vo)throws Exception;
+  public int checkDeleted(NoticeVO vo)throws Exception;
   public int maxNum()throws Exception;
+  public int modify(NoticeVO vo)throws Exception;
+  public int delete(int nno)throws Exception;
 }

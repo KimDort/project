@@ -4,55 +4,105 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.mapper.member">
-<!-- oracle sql -->
-<!-- <insert id="create" parameterType="MemberVO" >
-    INSERT INTO MEMBER(
-    id, mno, password, name,
-    nickname, phone,
-    zipcode, address1, address2,
-    auth,regdate,file1, size1, thumb)
-    VALUES(
-    #{id}, (SELECT NVL(MAX(mno), 0)+1 as mno FROM MEMBER),#{password}, #{name}, #{nickname},
-    #{phone}, #{zipcode}, #{address1}, #{address2}, #{auth},now(), #{file1}, #{size1}, #{thumb})
-  </insert> -->
-<!-- mysql sql -->
+	<!-- oracle sql -->
+	<!-- <insert id="create" parameterType="MemberVO" > INSERT INTO MEMBER( 
+		id, mno, password, name, nickname, phone, zipcode, address1, address2, auth,regdate,file1, 
+		size1, thumb) VALUES( #{id}, (SELECT NVL(MAX(mno), 0)+1 as mno FROM MEMBER),#{password}, 
+		#{name}, #{nickname}, #{phone}, #{zipcode}, #{address1}, #{address2}, #{auth},now(), 
+		#{file1}, #{size1}, #{thumb}) </insert> -->
+	<!-- mysql sql -->
 
 	<select id="maxNum" resultType="int">
-		SELECT IFNULL(MAX(MNO),0)+1 AS MNO FROM MEMBER
+		SELECT IFNULL(MAX(MNO),0)+1 AS
+		MNO FROM MEMBER
 	</select>
-  <insert id="create" parameterType="MemberVO" >
-    INSERT INTO MEMBER(
-    id, mno, password, name,
-    nickname, phone,
-    zipcode, address1, address2,
-    auth,regdate,file1, size1, thumb)
-    VALUES(
-    #{id}, (select IFNULL(MAX(th.mno),0)+1 from MEMBER as th),#{password}, #{name}, #{nickname},
-    #{phone}, #{zipcode}, #{address1}, #{address2}, #{auth},now(), #{file1}, #{size1}, #{thumb})
-  </insert>
-  <update id="confrim" parameterType="MemberVO">
-    UPDATE MEMBER SET CONFIRM ='Y' WHERE ID=#{id} and AUTH=#{auth} and AUTH2=#{auth2}
-  </update>
-  
-  <update id="confirm2" parameterType="MemberVO">
-  	UPDATE MEMBER SET AUTH2=#{auth2} WHERE ID=#{id}
-  </update>
-  <select id="login" resultType="int" parameterType="MemberVO">
-    SELECT COUNT(mno) as cnt
-    FROM MEMBER
-    WHERE id=#{id} AND password=#{password}
-  </select>
-  <select id="userinfo" resultType="MemberVO">
-    SELECT * FROM MEMBER WHERE ID=#{id}
-  </select>
-  <select id="selectuser" resultType="MemberVO">
-  	SELECT * FROM MEMBER WHERE mno=#{mno}
-  </select>
-  <select id="listAll" resultType="MemberVO">
-  	SELECT * FROM MEMBER ORDER BY MNO DESC
-  </select>
-  
-  <select id="checkId" resultType="int">
-  	SELECT COUNT(id) FROM MEMBER WHERE id=#{id}
-  </select>
+	<insert id="create" parameterType="MemberVO">
+		INSERT INTO MEMBER(
+		id, mno, password, name,
+		nickname, phone,
+		zipcode, address1, address2,
+		auth,regdate,file1, size1, thumb)
+		VALUES(
+		#{id}, (select IFNULL(MAX(th.mno),0)+1 from MEMBER as th),#{password},
+		#{name}, #{nickname},
+		#{phone}, #{zipcode}, #{address1}, #{address2}, #{auth},now(), #{file1},
+		#{size1}, #{thumb})
+	</insert>
+	<update id="confrim" parameterType="MemberVO">
+		UPDATE MEMBER SET CONFIRM ='Y' WHERE ID=#{id} and AUTH=#{auth} and
+		AUTH2=#{auth2}
+	</update>
+
+	<update id="confirm2" parameterType="MemberVO">
+		UPDATE MEMBER SET AUTH2=#{auth2} WHERE ID=#{id}
+	</update>
+	<select id="login" resultType="int" parameterType="MemberVO">
+		SELECT COUNT(mno) as cnt
+		FROM MEMBER
+		WHERE id=#{id} AND password=#{password}
+	</select>
+	<select id="userinfo" resultType="MemberVO">
+		SELECT * FROM MEMBER WHERE ID=#{id}
+	</select>
+	<select id="selectuser" resultType="MemberVO">
+		SELECT * FROM MEMBER WHERE mno=#{mno}
+	</select>
+	<select id="listAll" resultType="MemberVO">
+		SELECT * FROM MEMBER ORDER BY MNO DESC
+	</select>
+
+	<select id="checkId" resultType="int">
+		SELECT COUNT(id) FROM MEMBER WHERE id=#{id}
+	</select>
+
+	<!-- 페이징처리 -->
+	<select id="listPage" resultType="MemberVO">
+	 <![CDATA[
+	 	SELECT * FROM MEMBER WHERE mno > 0
+	 	order by mno desc limit #{pageStart}, #{perPageNum}
+	 ]]>
+	</select>
+	<select id="countPaging" resultType="int">
+		<![CDATA[
+			SELECT count(mno) FROM MEMBER WHERE mno > 0
+		]]>
+	</select>
+	<!-- 맴버 삭제 -->
+	<delete id="memberDelete">
+		DELETE FROM MEMBER WHERE mno=#{mno}
+	</delete>
+	
+	<!-- 업데이트 인증 -->
+	<update id="confirm">
+		UPDATE MEMBER SET confirm=#{confirm} WHERE mno=#{mno}
+	</update>
+	<!-- 회원 등급 변경 -->
+	<update id="mlevel">
+		UPDATE MEMBER SET mlevel=#{mlevel} WHERE mno=#{mno}
+	</update>
+	<!-- 회원 포인트 변경 -->
+	<update id="point">
+		UPDATE MEMBER SET point=#{point} WHERE mno=#{mno}
+	</update>
+	<!-- 탈퇴 여부 변경 -->
+	<update id="mdrop">
+		UPDATE MEMBER SET mdrop=#{mdrop} WHERE mno=#{mno}
+	</update>
+	
+	<!-- 회원 정보 변경 -->
+	<update id="updateMemberUser">
+		UPDATE MEMBER SET nickname=#{nickname},
+		phone=#{phone}, zipcode=#{zipcode}, address1=#{address1}, address2=#{address2},
+		file1=#{file1}, size1=#{size1}, thumb=#{thumb}
+		WHERE mno=#{mno}
+	</update>
+	
+	<!-- 회원 정보 변경 관리자 -->
+	<update id="updateMemberAdmin">
+		UPDATE MEMBER SET nickname=#{nickname},
+		phone=#{phone}, zipcode=#{zipcode}, address1=#{address1}, address2=#{address2},
+		confirm=#{confirm}, mlevel=#{mlevel}, mdrop=#{mdrop}, point=#{point},
+		file1=#{file1}, size1=#{size1}, thumb=#{thumb}
+		WHERE mno=#{mno}
+	</update>
 </mapper>

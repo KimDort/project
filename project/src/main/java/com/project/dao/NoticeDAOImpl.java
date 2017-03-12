@@ -24,7 +24,7 @@ public class NoticeDAOImpl implements NoticeDAO{
   @Override
   public List<NoticeVO> listCriteria(Criteria cri) throws Exception {
     // TODO Auto-generated method stub
-    return session.selectList("com.mapper.notice.list", cri);
+    return session.selectList("com.mapper.notice.listPage", cri);
   }
 
   @Override
@@ -79,6 +79,30 @@ public class NoticeDAOImpl implements NoticeDAO{
 public int maxNum() throws Exception {
 	// TODO Auto-generated method stub
 	return session.selectOne("com.mapper.notice.maxNum");
+}
+
+@Override
+public int modify(NoticeVO vo) throws Exception {
+	// TODO Auto-generated method stub
+	return session.update("com.mapper.notice.NoticeUpdate", vo);
+}
+
+@Override
+public int closedCheck(NoticeVO vo) throws Exception {
+	// TODO Auto-generated method stub
+	return session.update("com.mapper.notice.closed",vo);
+}
+
+@Override
+public int deletedCheck(NoticeVO vo) throws Exception {
+	// TODO Auto-generated method stub
+	return session.update("com.mapper.notice.deleted", vo);
+}
+
+@Override
+public int delete(int nno) throws Exception {
+	// TODO Auto-generated method stub
+	return session.delete("com.mapper.notice.noticeDelete",nno);
 }
 
 }

@@ -172,4 +172,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			SELECT count(cno) FROM COOK WHERE cno > 0
 		]]>	
 	</select>
+	<!-- sale인 항목 가져오기 -->
+	<select id="selectSale" resultType="CookVO">
+		SELECT * FROM COOK WHERE SALE='Y'
+	</select>
 </mapper>

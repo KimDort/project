@@ -109,9 +109,10 @@ public class MemberController {
 			vo = service.info(vo.getId());
 			model.addAttribute("MemberVO",vo);
 			model.addAttribute("confirm",vo.getConfirm());
+			model.addAttribute("level",vo.getMlevel());
 			//setViewName("redirect:/mail/mailSend?id=" + vo.getId());
 		}else{
-			model.addAttribute("false","false");
+			model.addAttribute("false",false);
 		}
 	}
 

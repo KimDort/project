@@ -88,13 +88,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	SELECT IFNULL(MAX(NNO),0)+1 AS nno FROM NOTICE
 	</select>
 	<insert id="insertNotice">
-		INSERT INTO NOTICE(nno, title, content, writer,
-		regdate, statrday, endday, strong, closed, deleted,file1, size1,
-		thumb)
-		VALUES(#{nno}, #{title},
-		#{content}, #{writer},
-		now(),#{startday},#{endday},#{strong},#{closed}, #{deleted},
-		#{file1}, #{size1},#{thumb})
+	INSERT INTO NOTICE(
+		nno, title, content, writer, regdate, strong, st_begin, st_end, st_day, 
+		closed, clo_begin, clo_end, clo_day, 
+		deleted, del_begin, del_end, del_day, display,
+		file1, size1, thumb)
+	VALUES(
+		#{nno}, #{title}, #{content}, #{writer}, now(), #{strong}, #{st_begin}, #{st_end}, #{st_day},
+		#{closed}, #{clo_begin}, #{clo_end}, #{clo_day}, 
+		#{deleted}, #{del_begin}, #{del_end}, #{del_day}, #{display},
+		#{file1}, #{size1}, #{thumb})
 	</insert>
 	<!-- 공지사항 강조부분 가져오기 -->
 	<select id="selectStrong" resultType="NoticeVO">
@@ -125,8 +128,36 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<update id="strong">
 		UPDATE NOTICE SET STRONG=#{strong} WHERE NNO=#{nno}
 	</update>
+	<!-- 비공개 업데이트 -->
+	<update id="closed">
+		UPDATE NOTICE SET CLOSED=#{closed} WHERE NNO=#{nno}
+	</update>
+	<!-- 삭제 업데이트 -->
+	<update id="deleted">
+		UPDATE NOTICE SET DELETED=#{deleted} WHERE NNO=#{nno}
+	</update>
 	<!-- 데이터 삭제 -->
 	<delete id="noticeDelete">
 		DELETE FROM NOTICE WHERE NNO=#{nno}
 	</delete>
+	<!-- 페이징처리 -->
+	<select id="listPage" resultType="NoticeVO">
+	 <![CDATA[
+	 	SELECT * FROM NOTICE WHERE nno > 0
+	 	order by nno desc limit #{pageStart}, #{perPageNum}
+	 ]]>		 
+	</select>
+	<select id="countPaging" resultType="int">
+		<![CDATA[
+			SELECT count(nno) FROM NOTICE WHERE nno > 0
+		]]>	
+	</select>
+	<update id="NoticeUpdate">
+		UPDATE NOTICE SET
+		title=#{title}, content=#{content}, strong=#{strong}, st_begin=#{st_begin}, st_end=#{st_end}, st_day=#{st_day},
+		closed=#{closed}, clo_begin=#{clo_begin}, clo_end=#{clo_end}, clo_day=#{clo_day},
+		deleted=#{deleted}, del_begin=#{del_begin}, del_end=#{del_end}, del_day=#{del_day},
+		display=#{display}, file1=#{file1}, size1=#{size1}, thumb=#{thumb}
+		WHERE nno=#{nno}
+	</update>
 </mapper>

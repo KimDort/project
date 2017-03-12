@@ -27,11 +27,10 @@ function check(){
 	}
 	return true;
 }
-function deleteItem(snonum){
+function deleteItem(snonum, page, perPageNum, url){
 	if(confirm("정말 삭제하시겠습니까?")==true){
-		//location.href='http://happyrecipek.iptime.org:9090/administrator/Thing/Delete?tno='+tno;
-		$.get("http://happyrecipek.iptime.org:9090/administrator/Shop/Delete",{sno:snonum})
-		window.location.reload();
+		location.href='http://happyrecipek.iptime.org:9090/administrator/Shop/Delete?sno='+snonum+"&page="+page+"&perPageNum="+perPageNum
+		+"&url="+url;
 	}else{
 		return false;
 	}
@@ -45,7 +44,6 @@ function closemodal(){
 //수정을 위해 정보가져오기
 function getAjax(sno){	
 	var url="/administrator/Shop/Modify?sno="+sno;
-	getCategoryList();
 	$.getJSON(url,function(data){
 		$(data).each(function(){
 			$("#sno").val(this.sno);
@@ -53,22 +51,26 @@ function getAjax(sno){
 			$("#title").val(this.title);
 			CKEDITOR.instances.content.setData(this.content);
 			$("select[id='ctgroup'] option[value='"+this.ctgroup+"']").eq(0).attr("selected","selected");
-			$("select[id='categorylist'] option[value='"+this.category+"']").eq(0).attr("selected","selected");
-			getThingList();
-			$("select[id='thinglist'] option[value='"+this.tno+"']").attr("selected","selected");
+			getCategoryList(0,this.ctgroup,this.category);
+			getThingList(0,this.ctgroup, this.category,this.tno);
+			
 			$("#in").val(this.startday);
 			$("#out").val(this.endday);
 			$("#starttime").val(this.starttime);
 			$("#endtime").val(this.endtime);
 			$("#cost").val(this.cost);
 			$("#salecost").val(this.salecost);
+			$("#coverimage").html("<img src='/photo_upload/thing/"+this.file1+"' style='width:300px;height: 300px;'>");
+			$("#file").val(this.file1);
 			
 			if(this.shopmore.length!=0){
 				$(this.shopmore).each(function(key,value){
 					$("select[id='ctgroup'] option[value='"+value.shopmorectgroup+"']").eq(1).attr("selected","selected");
-					$("select[id='categorylist'] option[value='"+value.shopmorecategory+"']").eq(1).attr("selected","selected");
-					$("#thinglist option[value='"+value.shopmoretno+']').attr("selected","selected");
+					getCategoryList(1,value.shopmorectgroup, value.shopmorecategory);
+					getThingList(1, value.shopmorectgroup, value.shopmorecategory, value.shopmoretno);
 				});
+			}else{
+				
 			}
 			
 			$("#st_begin").val(this.st_begin);
@@ -115,7 +117,7 @@ function getAjax(sno){
 			
 		});
 	});
-	$("#frm").attr("action","./Thing/Modify");
+	$("#frm").attr("action","./Shop/Modify");
 }
 
 function getCategoryList(){
@@ -142,6 +144,47 @@ function getThingList(){
 			$("select[id='thinglist']").eq(0).append("<option value='"+value.tno+"'>"+value.name+"</option>");			
 		});
 	});
+}
+function getCategoryList(index, ctgroup, selectnum){
+	var url="/administrator/Thing/CategoryList/"+ctgroup;
+	var str;
+	$.getJSON(url, function(data){
+		$("select[id='categorylist']").eq(index).empty();
+		$(data).each(function(){
+			if(this.ctno!=selectnum){
+				str="<option value='"+this.ctno+"'>"+this.ctname+"</option>";
+			}else{
+				str="<option value='"+this.ctno+"' selected='selected'>"+this.ctname+"</option>";
+			}
+			$("select[id='categorylist']").eq(index).append(str);
+		});
+	});
+}
+function getThingList(index, ctgroup, category, selectnum){
+	var url="/administrator/Thing/Categorylist?ctgroup="+ctgroup+"&ctno="+category;
+	var str;
+	$.getJSON(url,function(data){
+		$("select[id='thinglist']").eq(index).empty();
+		$("#shopmore").empty();
+		
+		$(data.thingCategoryList).each(function(key, value){
+			if(value.tno!=selectnum){
+				str="<option value='"+value.tno+"'>"+value.name+"</option>";
+			}else{
+				str="<option value='"+value.tno+"' selected='selected'>"+value.name+"</option>";
+			}
+			$("select[id='thinglist']").eq(index).append(str);
+			if(index==1){
+				if(value.tno!=selectnum){
+					str="<option value='"+value.tno+"'>"+value.name+"</option>";
+				}else{
+					str="<option value='"+value.tno+"' selected='selected'>"+value.name+"</option>";
+				}
+				$("#shopmore").append(str);
+			}
+		});
+		$("#shopmore").prepend("<option value='0'>없음</option>");
+	});	
 }
 //사이드 메뉴 설정
 function openNav() {

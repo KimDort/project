@@ -39,4 +39,10 @@ public class ShopMoreServiceImpl implements ShopMoreService{
 		return dao.selectList(sno);
 	}
 
+	@Override
+	public int delete(int sno) throws Exception {
+		// TODO Auto-generated method stub
+		return dao.delete(sno);
+	}
+
 }
