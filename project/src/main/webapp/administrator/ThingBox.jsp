@@ -28,11 +28,50 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script type="text/JavaScript">
+	var ctgroup=new Array();
+	var category=new Array();
+	
+	<c:forEach items="${ctgroup}" var="list">
+		var map={"num":'${list.ctgroup}',"text":'${list.name}'};
+		ctgroup.push(map);
+	</c:forEach>
+
+	<c:forEach items="${category}" var="list">
+	var map={"num":'${list.ctno}',"text":'${list.ctname}',"ctgroup":'${list.ctgroup}'};
+		category.push(map);
+	</c:forEach>
+	
 	window.onload = function() {
-		getCategoryList(${pageMaker.cri.ctgroup},${pageMaker.cri.category});
+		getCategoryList('${pageMaker.cri.ctgroup}','${pageMaker.cri.category}');
 	};
+	function createCtgroupList(){
+		var index=$("select[id='ctgroup']").length;
+		var str;
+		for(var i=0;i<index;i++){
+			for(var j=0;j<ctgroup.length;j++){
+				str="<option value='"+ctgroup[j].num+"'>"+ctgroup[j].text+"</option>";
+				$("select[id='ctgroup']").eq(i).append(str);				
+			}						
+		};
+	}
+	function createCategory(){
+		var index=$("select[id='categorylist']").length;
+		var num = new Array();
+		var str;
+		for(var i=0;i<index;i++){
+			num[i]=$("select[id='ctgroup']").eq(i).val();			
+			for(var j=0;j<category.length;j++){				
+				if(num[i]==category[j].ctgroup){
+					str+="<option value='"+category[j].num+"'>"+category[j].text+"</option>";
+				}
+			}
+			$("select[id='categorylist']").eq(i).append(str);
+		}		
+	} 
 	
 	$(document).ready(function(){		
+		createCtgroupList();
+		createCategory();
 		
 		var result = '${msg}';
 		if (result == 'SUCCESS') {
@@ -269,9 +308,9 @@
 															<div class="container" style="width: 100%;">
 																<label for="categorygroup">CATEGORY GROUP:</label> 
 																<select	class="form-control" name="ctgroup" id="ctgroup">
-																	<c:forEach items="${ctgroup }" var="ctList">
+																	<%-- <c:forEach items="${ctgroup }" var="ctList">
 																		<option value="${ctList.ctgroup }">${ctList.name }</option>
-																	</c:forEach>
+																	</c:forEach> --%>
 																</select>
 																<div class="form-group">
 																	<label for="category">CATEGORY: </label> 
@@ -330,9 +369,9 @@
 									<div class="row">
 										<div class="col-md-4" style="float: left;">
 											<select class="form-control" id="ctgroup" style="width: 80%; display: inline;">
-												<c:forEach items="${ctgroup }" var="ctList">
+												<%-- <c:forEach items="${ctgroup }" var="ctList">
 													<option value="${ctList.ctgroup }">${ctList.name }</option>
-												</c:forEach>
+												</c:forEach> --%>
 											</select>
 										</div>
 										<div class="col-md-4" style="float: left;">
@@ -378,12 +417,12 @@
 									<div class="row">
 										<div class="col-md-4" style="float: left;">
 											<select class="form-control" id="ctgroup" style="width: 80%; display: inline;">
-												<c:forEach items="${ctgroup }" var="ctList">
+												<%-- <c:forEach items="${ctgroup }" var="ctList">
 													<option value="${ctList.ctgroup }"
 													<c:out value="${pageMaker.cri.ctgroup eq ctList.ctgroup?'selected=selected':'' }"/>>
 													${ctList.name }													
 													</option>
-												</c:forEach>
+												</c:forEach> --%>
 											</select>
 										</div>
 										<div class="col-md-4" style="float: left;">
