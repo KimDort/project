@@ -150,9 +150,8 @@ function addCategory(){
 				success : function(result){
 					if(result=='SUCCESS'){
 						alert("카테고리가 성공적으로 생성 돼었습니다.");
-						getGroupList();
-						//getCategoryList();
 						$("#categoryText").val("");
+						getCategoryList($("select[id='ctgroup']").eq(1).val());
 					}
 				}
 			});

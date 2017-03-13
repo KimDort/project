@@ -1,5 +1,4 @@
- 
- <%@ page contentType="text/html; charset=UTF-8"%>
+<%@ page contentType="text/html; charset=UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
@@ -42,7 +41,12 @@
 	</c:forEach>
 	
 	window.onload = function() {
-		getCategoryList('${pageMaker.cri.ctgroup}','${pageMaker.cri.category}');
+		//getCategoryList('${pageMaker.cri.ctgroup}','${pageMaker.cri.category}');
+		if('${pageMaker.cri.ctgroup}' != 0){
+			getCategoryList('${pageMaker.cri.ctgroup}');
+		}else if('${pageMaker.cri.category}' !=0){
+			getCategoryList('${pageMaker.cri.ctgroup}','${pageMaker.cri.category}');
+		}
 	};
 	function createCtgroupList(){
 		var index=$("select[id='ctgroup']").length;
@@ -59,14 +63,15 @@
 		var num = new Array();
 		var str;
 		for(var i=0;i<index;i++){
-			num[i]=$("select[id='ctgroup']").eq(i).val();			
-			for(var j=0;j<category.length;j++){				
+			num[i]=$("select[id='ctgroup']").eq(i).val();
+			for(var j=0;j<category.length;j++){	
 				if(num[i]==category[j].ctgroup){
-					str+="<option value='"+category[j].num+"'>"+category[j].text+"</option>";
+					str="<option value='"+category[j].num+"'>"+category[j].text+"</option>";
+					$("select[id='categorylist']").eq(i).append(str);	
 				}
 			}
-			$("select[id='categorylist']").eq(i).append(str);
-		}		
+			
+		}
 	} 
 	
 	$(document).ready(function(){		
@@ -86,16 +91,20 @@
 			$("form[id='frm']")[0].reset();
 			$("#frm").attr("action","./Thing/Create")
 		});
-		
+		$("select[id='ctgroup']").on("change", function(){
+			var index=$("select[id='ctgroup']").index(this);
+			$("select[id='categorylist']").eq(index).empty();
+			createCategory();
+		});
 		//카테고리그룹 변경시 화면 리스트 출력
 		$("select[id='ctgroup']").eq(2).on("change",function(){
-			location.href="http://happyrecipek.iptime.org:9090/administrator/ThingBox?page="+${pageMaker.cri.page}+"&ctgroup="+
+			location.href="http://localhost:9090/administrator/ThingBox?page="+${pageMaker.cri.page}+"&ctgroup="+
 			$("select[id='ctgroup'] option:selected").eq(2).val();
 		});
 		
 		//카테고리 변경시 화면 리스트 출력
 		$("select[id='categorylist']").eq(2).on("change",function(){
-			location.href="http://happyrecipek.iptime.org:9090/administrator/ThingBox?page="+${pageMaker.cri.page}+"&ctgroup="+
+			location.href="http://localhost:9090/administrator/ThingBox?page="+${pageMaker.cri.page}+"&ctgroup="+
 			$("select[id='ctgroup'] option:selected").eq(2).val()+"&category="+$("select[id='categorylist'] option:selected").eq(2).val();
 		});
 		
@@ -111,7 +120,7 @@
 			$("select[id='ctgroup'] option[value='"+ctgroup+"']").eq(0).prop("selected",true);
 		});		
 		
-		//카테고리 그룹 선택시 그룹에 속한 소그룹 출력
+		/* //카테고리 그룹 선택시 그룹에 속한 소그룹 출력
 		$("select[id='ctgroup']").on("change",function(){
 			var indexno=$("select[id='ctgroup']").index(this);		
 			var ctgroup=this.value;
@@ -132,7 +141,7 @@
 							}
 						});
 			});
-		});
+		}); */
 		//카테고리 그룹 선택시 그룹에 속한 소그룹 출력
 		/* $("select[id='ctgroup']").on("click",function(){
 			var indexno=$("select[id='ctgroup']").index(this);		
@@ -249,13 +258,13 @@
 <body>
 	<div id="mySidenav" class="sidenav">
 		<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-  		<a href="http://happyrecipek.iptime.org:9090">HOME</a>
-  		<a href="http://happyrecipek.iptime.org:9090/administrator/CookBox?page=1&perPageNum=12">Cooking Class</a>
-  		<a href="http://happyrecipek.iptime.org:9090/administrator/ShopBox?page=1&perPageNum=12">Shop</a>
-  		<a href="http://happyrecipek.iptime.org:9090/administrator/ThingBox?page=1&perPageNum=12">Thing</a>
-  		<a href="http://happyrecipek.iptime.org:9090/administrator/EventBox?page=1&perPageNum=12">Event</a>
-  		<a href="http://happyrecipek.iptime.org:9090/administrator/NoticeTable?page=1&perPageNum=12">Notice</a>
-  		<a href="http://happyrecipek.iptime.org:9090/administrator/MemberTable?page=1&perPageNum=12">Member</a>
+  		<a href="http://localhost:9090">HOME</a>
+  		<a href="http://localhost:9090/administrator/CookBox?page=1&perPageNum=12">Cooking Class</a>
+  		<a href="http://localhost:9090/administrator/ShopBox?page=1&perPageNum=12">Shop</a>
+  		<a href="http://localhost:9090/administrator/ThingBox?page=1&perPageNum=12">Thing</a>
+  		<a href="http://localhost:9090/administrator/EventBox?page=1&perPageNum=12">Event</a>
+  		<a href="http://localhost:9090/administrator/NoticeTable?page=1&perPageNum=12">Notice</a>
+  		<a href="http://localhost:9090/administrator/MemberTable?page=1&perPageNum=12">Member</a>
 	</div>
 	<section class="body-sec">
 		<div class="container">
@@ -273,11 +282,11 @@
 										<div class="col-md-12">
 											<ul class="nav nav-tabs" style="float: left;">
 												<li class="active"><a
-													href="http://happyrecipek.iptime.org:9090/administrator/ThingBox?page=1&perPageNum=12">
+													href="http://localhost:9090/administrator/ThingBox?page=1&perPageNum=12">
 														<span class="glyphicon glyphicon-th-large"></span>
 												</a></li>
 												<li>
-													<a href="http://happyrecipek.iptime.org:9090/administrator/ThingTable?page=1&perPageNum=12">
+													<a href="http://localhost:9090/administrator/ThingTable?page=1&perPageNum=12">
 														<span class="glyphicon glyphicon-list"></span>
 													</a>
 												</li>

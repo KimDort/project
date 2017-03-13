@@ -17,7 +17,6 @@ import com.project.vo.MemberVO;
 public class LoginInterceptor2 extends HandlerInterceptorAdapter {
 	private static Logger logger = LoggerFactory.getLogger(LoginInterceptor2.class);
 
-	@SuppressWarnings("null")
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
 			ModelAndView modelAndView) throws Exception {
@@ -42,12 +41,12 @@ public class LoginInterceptor2 extends HandlerInterceptorAdapter {
 				MemberVO vo=(com.project.vo.MemberVO) MemberVO;
 				response.setContentType("text/html; charset=UTF-8");
 				PrintWriter out = response.getWriter();
-				out.println("<script>alert('귀하의 메일로 인증코드를 전송하였습니다.'); location.href='http://happyrecipek.iptime.org:9090';</script>");
+				out.println("<script>alert('귀하의 메일로 인증코드를 전송하였습니다.'); location.href='http://localhost:9090';</script>");
 				response.sendRedirect("/mail/mailSend?id="+vo.getId());
 				out.flush();
 			}else if(confirm != null && confirm.equals('Y')){
 				session.setAttribute("MemberVO", MemberVO);
-				if(dest!=null || !dest.equals("") || !dest.equals(null)){
+				if(dest!=null){
 					String[] reqUrl=dest.split("/");	
 					if(reqUrl[1].equals("administrator")){
 						int page= (int) request.getSession().getAttribute("page");
@@ -66,9 +65,9 @@ public class LoginInterceptor2 extends HandlerInterceptorAdapter {
 						request.getSession().setAttribute("sno", sno);
 						System.out.println("요청 수정된 url : "+ url);
 						response.sendRedirect(url);
-					}else{
-						response.sendRedirect("/");
 					}					
+				}else{
+					response.sendRedirect("/");
 				}				
 			}
 		}else if(login != null && (boolean)login==false){
