@@ -28,6 +28,8 @@ if (result == 'SUCCESS') {
   alert('아이디 또는 암호가 틀렸습니다.');
 }if(result=="SEND"){
   alert("이메일 인증을 받지 않으셨습니다. 귀하의 이메일에 인증코드를 발송하였습니다.");
+}if(result=='noadmin'){
+	alert("접근 권한이 없습니다.");
 }
 $(document).ready(function(){
 	var fromObj=$("#joinFrm");

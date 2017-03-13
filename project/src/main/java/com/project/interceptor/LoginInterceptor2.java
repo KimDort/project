@@ -42,7 +42,7 @@ public class LoginInterceptor2 extends HandlerInterceptorAdapter {
 				MemberVO vo=(com.project.vo.MemberVO) MemberVO;
 				response.setContentType("text/html; charset=UTF-8");
 				PrintWriter out = response.getWriter();
-				out.println("<script>alert('귀하의 메일로 인증코드를 전송하였습니다.'); location.herf='http://localhost:9090';</script>");
+				out.println("<script>alert('귀하의 메일로 인증코드를 전송하였습니다.'); location.href='http://happyrecipek.iptime.org:9090';</script>");
 				response.sendRedirect("/mail/mailSend?id="+vo.getId());
 				out.flush();
 			}else if(confirm != null && confirm.equals('Y')){
