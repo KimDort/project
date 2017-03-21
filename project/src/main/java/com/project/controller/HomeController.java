@@ -12,6 +12,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.project.service.CookService;
 import com.project.service.EventService;
@@ -48,7 +50,13 @@ public class HomeController {
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home(Model model, HttpServletRequest request) throws Exception {
-		logger.info("Home get In ip:"+request.getLocalAddr());
+		HttpServletRequest req = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
+        String ip = req.getHeader("X-FORWARDED-FOR");
+        if (ip == null)
+            ip = req.getRemoteAddr();
+        
+		
+		logger.info("Home get In ip:"+ip);
 		List<EventVO> eventBannerList = new ArrayList<EventVO>();
 		List<ThingVO> thingAllList = new ArrayList<ThingVO>();
 		List<ThingVO> thingStrongList = new ArrayList<ThingVO>();

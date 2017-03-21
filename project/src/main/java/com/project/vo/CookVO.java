@@ -18,6 +18,7 @@ public class CookVO {
 	private String endtime;
 	private int minmember;
 	private int maxmember;
+	private int joinmember;
 	private int cost;
 	private int salecost;
 	private String someready;
@@ -43,6 +44,14 @@ public class CookVO {
 	private String file1;
 	private long size1;
 	
+	public int getJoinmember() {
+		return joinmember;
+	}
+
+	public void setJoinmember(int joinmember) {
+		this.joinmember = joinmember;
+	}
+
 	public String getSt_begin() {
 		return st_begin;
 	}

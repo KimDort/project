@@ -1,3 +1,4 @@
+select * from cook;
 select * from shoporder;
 delete from shoporder;
 commit
@@ -183,6 +184,7 @@ CREATE TABLE COOK(
 		endTime                       		VARCHAR(1000)		 NULL  COMMENT '끝시간',
 		minMember                     		INT(38)		 NOT NULL COMMENT '최소인원',
 		maxMember                     		INT(38)		 NULL  COMMENT '최대인원',
+		joinMember                    		INT(38)		 NULL  COMMENT '등록인원',
 		cost                          		INT(38)		 NULL  COMMENT '결제금액',
 		salecost                      		INT(38)		 DEFAULT 0		 NULL  COMMENT '할인금액',
 		someReady                     		VARCHAR(300)		 NULL  COMMENT '준비물',
@@ -198,7 +200,7 @@ CREATE TABLE COOK(
 		deleted                       		CHAR(1)		 NULL  COMMENT '삭제',
 		del_begin                     		VARCHAR(100)		 NULL  COMMENT '삭제시작날짜',
 		del_end                       		VARCHAR(100)		 NULL  COMMENT '삭제끝날짜',
-		del_day                        		VARCHAR(100)		 NULL  COMMENT '삭제등록후날짜',
+		del_day                       		VARCHAR(100)		 NULL  COMMENT '삭제등록후날짜',
 		sale                          		CHAR(1)		 NULL  COMMENT '세일',
 		sale_begin                    		VARCHAR(100)		 NULL  COMMENT '세일시작날짜',
 		sale_end                      		VARCHAR(100)		 NULL  COMMENT '세일끝날짜',
@@ -211,9 +213,6 @@ CREATE TABLE COOK(
 
 ALTER TABLE COOK ADD CONSTRAINT IDX_COOK_PK PRIMARY KEY (cno);
 ALTER TABLE COOK ADD CONSTRAINT IDX_COOK_FK0 FOREIGN KEY (writer) REFERENCES MEMBER (id);
-
-
-
 
 
 select * from thing;

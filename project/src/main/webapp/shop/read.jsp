@@ -90,6 +90,7 @@
 						</div>	
 					</c:if>
 					<form id="frmbuy">
+					<input type="hidden" name="sno" value="${shopone.sno }">
 					<div class="row" style="margin-top: 5px;" id="shopThing">
 					<div class="col-md-4" style="width: 100%;margin: 0 0 0 0;padding: 0 0 0 0;">
 						<div class="com-sm-2" style="width: 54%;float: left;line-height: 25px;">${shopone.title }</div>
@@ -112,7 +113,7 @@
 							<input type="hidden" id="hcost" class="hcost${thing.tno }" value="${thing.sellcost }">
 							<input type="hidden" value="${thing.tno }" id="tno" name='tno'>
 							<input type="hidden" id="cost${thing.tno }" name="cost${thing.tno }" value="${thing.sellcost }">
-							<input type="hidden" name="sno" value="${shopone.sno }">
+							
 						</div>
 					</div>				
 					</div>

@@ -255,11 +255,12 @@ public class AdministratorController {
 	}
 	// 쿠킹 클래스 등록
 	@RequestMapping(value = "/Cook/Create", method = RequestMethod.POST)
-	public String postCook(CookVO vo, RedirectAttributes rttr, @RequestParam("shopmore") String[] shopmore,
-			HttpServletRequest request, @RequestParam("url")String url, @ModelAttribute("cri")SearchCriteria cri) throws Exception {
+	public String postCook(@RequestParam("url")String url, CookVO vo, RedirectAttributes rttr, 
+			HttpServletRequest request, @ModelAttribute("cri")SearchCriteria cri, 
+			@RequestParam("shopmore")int[] shopmore) throws Exception {
 		logger.info("Administrator Cook Register");
 		CookMoreThingVO cmtVO = new CookMoreThingVO();
-		String[] tno = new String[shopmore.length];
+		//String[] tno = new String[shopmore.length];
 
 		vo.setCno(cookService.maxNum());
 
@@ -288,9 +289,9 @@ public class AdministratorController {
 		vo.setThumb(thumb);
 
 		if (cookService.regisertCook(vo) == 1) {
-			if (!shopmore[0].toString().equals("0")) {
+			if (shopmore[0]!=0) {
 				for (int i = 0; i < shopmore.length; i++) {
-					cmtVO.setSno(Integer.parseInt(tno[i] = shopmore[i].toString()));
+					cmtVO.setSno(shopmore[i]);
 					cmtVO.setCno(vo.getCno());
 					cmService.register(cmtVO);
 				}
@@ -298,8 +299,7 @@ public class AdministratorController {
 			rttr.addFlashAttribute("msg", "SUCCESS");
 		}
 		
-		url += "?page="+cri.getPage()+"?perPageNum="+cri.getPerPageNum();
-		
+		url+="?page="+cri.getPage()+"&perPageNum="+cri.getPerPageNum();
 		return "redirect:/administrator/"+url;
 	}
 
@@ -423,11 +423,10 @@ public class AdministratorController {
 	// 쿠킹 클래스 수정 업데이트
 	@RequestMapping(value = "/Cook/Modify", method = RequestMethod.POST)
 	public String postCookModify(CookVO vo, Model model, @RequestParam("cno") int cno, RedirectAttributes rttr,
-			HttpServletRequest request, @RequestParam("shopmore") String[] shopmore,@RequestParam("url")String url,
+			HttpServletRequest request, @RequestParam("url")String url, @RequestParam("shopmore")int[] shopmore,
 			@ModelAttribute("cri")SearchCriteria cri) throws Exception {
-		CookMoreThingVO cmtVO = new CookMoreThingVO();
-		String[] sno = new String[shopmore.length];
 
+		CookMoreThingVO cmtVO = new CookMoreThingVO();
 		vo.setCno(cno);
 
 		char display = request.getParameter("display") == null ? 'N' : 'Y';
@@ -435,7 +434,8 @@ public class AdministratorController {
 		char strong = request.getParameter("strong") == null ? 'N' : 'Y';
 		char sale = request.getParameter("sale") == null ? 'N' : 'Y';
 		char deleted = request.getParameter("deleted") == null ? 'N' : 'Y';
-
+		
+		vo.setStrong(strong);
 		vo.setDisplay(display);
 		vo.setClosed(closed);
 		vo.setDeleted(deleted);
@@ -445,7 +445,6 @@ public class AdministratorController {
 		String thumb = "";
 		String file1 = "";
 		long size1 = 0;
-
 		CookVO oldVo = new CookVO();
 		oldVo = cookService.read(cno);
 
@@ -460,7 +459,6 @@ public class AdministratorController {
 			String upDir = Tool.getRealPath(request, Folder);
 			Tool.deleteFile(upDir, oldVo.getFile1());
 			Tool.deleteFile(upDir, oldVo.getThumb());
-
 			Tool tool = new Tool();
 			tool.CheckFolder(request, Folder);
 
@@ -474,23 +472,24 @@ public class AdministratorController {
 			}
 			vo.setThumb(thumb);
 		}
+
 		if (cookService.modify(vo) == 1) {
 			rttr.addFlashAttribute("msg", "SUCCESS");
-			if (shopmore[0].toString().equals("0")) {
+			if (shopmore[0]==0) {
 				cmService.delete(cno);
 			} else {
 				cmService.delete(cno);
 				for (int i = 0; i < shopmore.length; i++) {
-					cmtVO.setSno(Integer.parseInt(sno[i] = shopmore[i].toString()));
+					cmtVO.setSno(shopmore[i]);
 					cmtVO.setCno(vo.getCno());
 					cmService.register(cmtVO);
 				}
 			}
 		}
-		url+="?page="+cri.getPage()+"?perPageNum="+cri.getPerPageNum();
+		url+="?page="+cri.getPage()+"&perPageNum="+cri.getPerPageNum();
+		
 		return "redirect:/administrator/"+url;
 	}
-
 	// 쿠킹 클래스 강조 출력 여부
 	@RequestMapping(value = "/Cook/Strong/Update/{cno}", method = { RequestMethod.PUT, RequestMethod.PATCH })
 	public ResponseEntity<String> StrongUpdate(@RequestBody CookVO vo, @PathVariable("cno") int cno) throws Exception {
@@ -564,7 +563,7 @@ public class AdministratorController {
 	public ResponseEntity<List<CtgroupVO>> getCtgroupList() {
 		ResponseEntity<List<CtgroupVO>> entity = null;
 		try {
-			entity = new ResponseEntity<>(thingService.groupList(), HttpStatus.OK);
+			entity = new ResponseEntity<>(ctService.AllList(), HttpStatus.OK);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -574,12 +573,12 @@ public class AdministratorController {
 	}
 
 	// 카테고리 리스트 출력 메소드
-	@RequestMapping(value = "/Thing/CategoryList/{ctgroup}", method = RequestMethod.GET)
-	public ResponseEntity<List<CategoryVO>> getCategoyList(@PathVariable("ctgroup") int ctgroup) {
+	@RequestMapping(value = "/Thing/CategoryList", method = RequestMethod.GET)
+	public ResponseEntity<List<CategoryVO>> getCategoyList() {
 		ResponseEntity<List<CategoryVO>> entity = null;
 		List<CategoryVO> vo = new ArrayList<CategoryVO>();
 		try {
-			vo = thingService.categoryList(ctgroup);
+			vo = thingService.categoryAllList();
 			entity = new ResponseEntity<List<CategoryVO>>(vo, HttpStatus.OK);
 		} catch (Exception e) {
 			// TODO: handle exception

@@ -108,7 +108,7 @@ function getAllBoxList(name){
 	});
 }
 
-//카테고리 그룹 리스트 출력
+/*//카테고리 그룹 리스트 출력
 function getGroupList(){	
 	var totalSelect=$("select[id='ctgroup']").length;
 	$.getJSON("/thing/ctgrouplist/", function(data){
@@ -134,15 +134,15 @@ function getCategoryList(){
 					});
 			}
 		});
-}
+}*/
 //자세한 상품 페이지 정보 가져오기
-function getThingInfo(tno){
+/*function getThingInfo(tno){
 	$.getJSON("/thing/getthing/"+tno,function(data){
 		$(data).each(function(){
 			totalCostSum(this.tno);
 		});		
 	});
-}
+}*/
 //주문상품 총 가격 구하기
 function totalCostSum(){
 	//alert("총 금액 : "+$("#hcost"+idnum).val());
@@ -268,7 +268,7 @@ $(document).ready(function() {
 	for(var i=0;i<$("div[id='totalcost']").length;i++){
 		$("div[id='totalcost']").eq(i).html(formatNumber(totalcostsum)+"원");
 	}
-	getThingInfo($("#tno").val());
+	//getThingInfo($("#tno").val());
 	
 	/*$(".member-box").css("position", "absolute");
 	$(".member-box").css("top",Math.max(0, (($(window).height()-$(".member-box").outerHeight())/2)
@@ -279,7 +279,7 @@ $(document).ready(function() {
 	$("#buynow").on("click",function(){
 		var frmdata=$("#frmbuy");
 		frmdata.attr("action", "./shoporder");
-		frmdata.attr("method","post");
+		frmdata.attr("method","POST");
 		frmdata.submit();
 		//frmdata.submit();
 	});

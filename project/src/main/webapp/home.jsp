@@ -29,10 +29,10 @@
             <c:if test="${cookIndex.strong ne 'Y'.charAt(0) && cookIndex.display ne 'N'.charAt(0) }">
               <div class="col-sm-5">
                 <div class="card">
-                  <img src="/photo_upload/cook/${cookIndex.thumb }">
+                  <a href="./cook/read?cno=${cookIndex.cno }"><img src="/photo_upload/cook/${cookIndex.thumb }" ></a>
                   <div class="container">
                     <h4>
-                      <a href="#">${cookIndex.title }</a>
+                      <a href="./cook/read?cno=${cookIndex.cno }">${cookIndex.title }</a>
                     </h4>
                   </div>
                 </div>

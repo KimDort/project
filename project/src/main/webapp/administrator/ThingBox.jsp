@@ -30,17 +30,17 @@
 	var ctgroup=new Array();
 	var category=new Array();
 	
-	<c:forEach items="${ctgroup}" var="list">
-		var map={"num":'${list.ctgroup}',"text":'${list.name}'};
-		ctgroup.push(map);
-	</c:forEach>
-
-	<c:forEach items="${category}" var="list">
-	var map={"num":'${list.ctno}',"text":'${list.ctname}',"ctgroup":'${list.ctgroup}'};
-		category.push(map);
-	</c:forEach>
-	
 	window.onload = function() {
+		<c:forEach items="${ctgroup}" var="list">
+			var map={"num":'${list.ctgroup}',"text":'${list.name}'};
+			ctgroup.push(map);
+		</c:forEach>
+
+		<c:forEach items="${category}" var="list">
+			var map={"num":'${list.ctno}',"text":'${list.ctname}',"ctgroup":'${list.ctgroup}'};
+			category.push(map);
+		</c:forEach>
+		
 		//getCategoryList('${pageMaker.cri.ctgroup}','${pageMaker.cri.category}');
 		if('${pageMaker.cri.ctgroup}' != 0){
 			getCategoryList('${pageMaker.cri.ctgroup}');
@@ -48,7 +48,7 @@
 			getCategoryList('${pageMaker.cri.ctgroup}','${pageMaker.cri.category}');
 		}
 	};
-	function createCtgroupList(){
+	function createCtgroupList(ctgnum){
 		var index=$("select[id='ctgroup']").length;
 		var str;
 		for(var i=0;i<index;i++){
@@ -58,7 +58,7 @@
 			}						
 		};
 	}
-	function createCategory(){
+	function createCategoryList(ctnum){
 		var index=$("select[id='categorylist']").length;
 		var num = new Array();
 		var str;
@@ -73,10 +73,93 @@
 			
 		}
 	} 
+	//카테고리 그룹 리스트 출력
+	function getGroupList(){
+		$.getJSON("./Thing/GroupList/", function(data){
+				$(data).each(function(){
+					var map={"num":this.ctgroup,"text":this.name};
+					ctgroup.push(map);
+				});
+		});
+	};
+	//카테고리 리스트 출력
+	function getCategoryList(){
+		$.getJSON("./Thing/CategoryList", function(data){	
+				$(data).each(function(){	
+					var map={"num":this.ctno, "text":this.ctname,"ctgroup":this.ctgroup};
+					category.push(map);
+				});
+		});		
+	}
+	
+	//카테고리 그룹 추가 구문
+	function addGroup(){
+		var groupName=$("#groupText").val();
+		if(groupName.length==0){
+			alert("추가할 카테고리 그룹명을 입력해 주십시오.");
+		}else{
+			$.ajax({
+				type : 'post',
+				url : '/thing/insertCtgroup',
+				headers : {
+					"Content-Type" : "application/json",
+					"X-HTTP-Method-Override" : "POST"
+				},
+				dataType: 'text',
+				data : JSON.stringify({
+					name : groupName
+				}),
+				success : function(result){
+					if(result=='SUCCESS'){
+						alert("카테고리 그룹이 성공적으로 생성 돼었습니다.");
+						getGroupList();
+						getCategoryList();
+						createCtgroupList();
+						createCategoryList();
+						$("#groupText").val("");
+					}
+				}
+			});
+		}
+	}
+	//카테고리 추가 구문
+	function addCategory(){
+		if($("#categoryText").val().length==0){
+			alert("추가할 카테고리 명을 입력해 주십시오.");
+		}else{
+			var ctgrouptext=$("select[id='ctgroup'] option:selected").eq(1).text();
+			var chConfirm=confirm(ctgrouptext+" 그룹에 "+$("#categoryText").val()+" 카테고리를 정말 추가하시겠습니까?");
+			if(chConfirm==true){
+				$.ajax({
+					type : 'post',
+					url : '/thing/insertCategory',
+					headers : {
+						"Content-Type" : "application/json",
+						"X-HTTP-Method-Override" : "POST"
+					},
+					dataType: 'text',
+					data : JSON.stringify({
+						ctname : $("#categoryText").val(),
+						ctgroup : $("select[id='ctgroup']").eq(1).val()
+					}),
+					success : function(result){
+						if(result=='SUCCESS'){
+							alert("카테고리가 성공적으로 생성 돼었습니다.");
+							$("#categoryText").val("");
+							getCategoryList();
+							createCategoryList();
+						}
+					}
+				});
+			}else{
+				return false;
+			}			
+		}
+	}
 	
 	$(document).ready(function(){		
 		createCtgroupList();
-		createCategory();
+		createCategoryList();
 		
 		var result = '${msg}';
 		if (result == 'SUCCESS') {
@@ -94,17 +177,18 @@
 		$("select[id='ctgroup']").on("change", function(){
 			var index=$("select[id='ctgroup']").index(this);
 			$("select[id='categorylist']").eq(index).empty();
-			createCategory();
+			createCategoryList();
 		});
 		//카테고리그룹 변경시 화면 리스트 출력
 		$("select[id='ctgroup']").eq(2).on("change",function(){
-			location.href="http://localhost:9090/administrator/ThingBox?page="+${pageMaker.cri.page}+"&ctgroup="+
-			$("select[id='ctgroup'] option:selected").eq(2).val();
+			location.href="http://happyrecipek.iptime.org:9090/administrator/ThingBox?page="+${pageMaker.cri.page}+
+					"&perPageNum="+'${pageMaker.cri.perPageNum}'+
+					"&ctgroup="+$("select[id='ctgroup'] option:selected").eq(2).val();
 		});
 		
 		//카테고리 변경시 화면 리스트 출력
 		$("select[id='categorylist']").eq(2).on("change",function(){
-			location.href="http://localhost:9090/administrator/ThingBox?page="+${pageMaker.cri.page}+"&ctgroup="+
+			location.href="http://happyrecipek.iptime.org:9090/administrator/ThingBox?page="+${pageMaker.cri.page}+"&ctgroup="+
 			$("select[id='ctgroup'] option:selected").eq(2).val()+"&category="+$("select[id='categorylist'] option:selected").eq(2).val();
 		});
 		
@@ -165,6 +249,72 @@
 						});
 			});
 		}); */
+		
+		//카테고리 추가 구문
+		/* function addCategory(){
+			if($("#categoryText").val().length==0){
+				alert("추가할 카테고리 명을 입력해 주십시오.");
+			}else{
+				var ctgrouptext=$("select[id='ctgroup'] option:selected").eq(1).text();
+				var chConfirm=confirm(ctgrouptext+" 그룹에 "+$("#categoryText").val()+" 카테고리를 정말 추가하시겠습니까?");
+				if(chConfirm==true){
+					$.ajax({
+						type : 'post',
+						url : '/thing/insertCategory',
+						headers : {
+							"Content-Type" : "application/json",
+							"X-HTTP-Method-Override" : "POST"
+						},
+						dataType: 'text',
+						data : JSON.stringify({
+							ctname : $("#categoryText").val(),
+							ctgroup : $("select[id='ctgroup']").eq(1).val()
+						}),
+						success : function(result){
+							if(result=='SUCCESS'){
+								alert("카테고리가 성공적으로 생성 돼었습니다.");
+								$("#categoryText").val("");
+								getCategoryList($("select[id='ctgroup']").eq(1).val());
+							}
+						}
+					});
+				}else{
+					return false;
+				}			
+			}
+		} */
+		
+		/* function getCategoryList(ctgroup, category){
+			//var ctgroup=$("select[id='ctgroup'] option:selected").val();
+			var ctgroup=ctgroup;
+			var totalCategory=$("select[id='categorylist']").length;
+			$.getJSON("./Thing/CategoryList/"+ctgroup, function(data){
+				var str="";
+				for(var i=0;i<totalCategory;i++){
+				$("select[id='categorylist']").eq(i).empty();			
+				$(data).each(
+						function(){
+							str="<option value='"+this.ctno+"'>"+this.ctname+"</option>";
+							$("select[id='categorylist']").eq(i).append(str);
+							$("select[id='categorylist'] option[value='"+category+"']").eq(2).attr("selected","selected");
+						});
+				}
+			});
+	}; */
+	
+		/* //카테고리 그룹 리스트 출력
+		function getGroupList(){	
+			var totalSelect=$("select[id='ctgroup']").length;
+			$.getJSON("./Thing/GroupList/", function(data){
+				for(var i=0;i<totalSelect;i++){
+					$("select[id='ctgroup']").eq(i).empty();
+					$(data).each(
+							function(){
+								$("select[id='ctgroup']").eq(i).append("<option value='"+this.ctgroup+"'>"+this.name+"</option>");					
+							});
+				}
+			});
+		}; */
 	});
 </script>
 <style type="text/css">
@@ -258,13 +408,13 @@
 <body>
 	<div id="mySidenav" class="sidenav">
 		<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-  		<a href="http://localhost:9090">HOME</a>
-  		<a href="http://localhost:9090/administrator/CookBox?page=1&perPageNum=12">Cooking Class</a>
-  		<a href="http://localhost:9090/administrator/ShopBox?page=1&perPageNum=12">Shop</a>
-  		<a href="http://localhost:9090/administrator/ThingBox?page=1&perPageNum=12">Thing</a>
-  		<a href="http://localhost:9090/administrator/EventBox?page=1&perPageNum=12">Event</a>
-  		<a href="http://localhost:9090/administrator/NoticeTable?page=1&perPageNum=12">Notice</a>
-  		<a href="http://localhost:9090/administrator/MemberTable?page=1&perPageNum=12">Member</a>
+  		<a href="http://happyrecipek.iptime.org:9090">HOME</a>
+  		<a href="http://happyrecipek.iptime.org:9090/administrator/CookBox?page=1&perPageNum=12">Cooking Class</a>
+  		<a href="http://happyrecipek.iptime.org:9090/administrator/ShopBox?page=1&perPageNum=12">Shop</a>
+  		<a href="http://happyrecipek.iptime.org:9090/administrator/ThingBox?page=1&perPageNum=12">Thing</a>
+  		<a href="http://happyrecipek.iptime.org:9090/administrator/EventBox?page=1&perPageNum=12">Event</a>
+  		<a href="http://happyrecipek.iptime.org:9090/administrator/NoticeTable?page=1&perPageNum=12">Notice</a>
+  		<a href="http://happyrecipek.iptime.org:9090/administrator/MemberTable?page=1&perPageNum=12">Member</a>
 	</div>
 	<section class="body-sec">
 		<div class="container">
@@ -282,11 +432,11 @@
 										<div class="col-md-12">
 											<ul class="nav nav-tabs" style="float: left;">
 												<li class="active"><a
-													href="http://localhost:9090/administrator/ThingBox?page=1&perPageNum=12">
+													href="http://happyrecipek.iptime.org:9090/administrator/ThingBox?page=1&perPageNum=12">
 														<span class="glyphicon glyphicon-th-large"></span>
 												</a></li>
 												<li>
-													<a href="http://localhost:9090/administrator/ThingTable?page=1&perPageNum=12">
+													<a href="http://happyrecipek.iptime.org:9090/administrator/ThingTable?page=1&perPageNum=12">
 														<span class="glyphicon glyphicon-list"></span>
 													</a>
 												</li>
@@ -461,7 +611,7 @@
 																		<div class="row">
 																			<input type="button" value="DELETE"
 																				class="btn btn-default"
-																				onclick="deleteItem(${list.tno}, ${pageMaker.cri.page }, ${pageMaker.cri.perPageNum },'ThingBox')"> <input
+																				onclick="deleteItem('${list.tno}', '${pageMaker.cri.page }', '${pageMaker.cri.perPageNum }','ThingBox')"> <input
 																				type="button" value="MODIFY" class="btn btn-default"
 																				onclick="getAjax(${list.tno})" data-toggle="modal"
 																				data-target="#thingadd">

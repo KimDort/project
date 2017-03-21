@@ -34,8 +34,16 @@
   </beans:bean>
   <beans:bean id="AdminAuthInterceptor" class="com.project.interceptor.AdminAuthInterceptor">
   </beans:bean>
+  <beans:bean id="ShoporderInterceptor" class="com.project.interceptor.ShoporderInterceptor">
+  </beans:bean>
+  <beans:bean id="ShopreadInterceptor" class="com.project.interceptor.ShopreadInterceptor">
+  </beans:bean>
   
   <interceptors>
+  	<interceptor>
+  		<mapping path="/shop/read"/>
+  		<beans:ref bean="ShopreadInterceptor"/>
+  	</interceptor>
   	<interceptor>
   		<mapping path="/shop/shoporder"/>
   		<beans:ref bean="AuthInterceptor"/>
@@ -47,6 +55,10 @@
   	<interceptor>
   		<mapping path="/administrator/*"/>
   		<beans:ref bean="AdminAuthInterceptor"/>
+  	</interceptor>
+  	<interceptor>
+  		<mapping path="/shop/shopordercomplete"/>
+  		<beans:ref bean="ShoporderInterceptor"/>
   	</interceptor>
   </interceptors>
 	<context:component-scan base-package="com.project.controller" />

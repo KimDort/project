@@ -2,7 +2,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -50,6 +49,29 @@
 	<jsp:include page="../menu/top.jsp" flush='false' />
 	<section class="body-sec">
 		<div class="container">
+			<div class="row">
+			<font size="4pt">ORDER INFO</font>
+				<div class="col-md-12" style="margin: 0 0 0 0; padding: 0 0 0 0">
+					<table class="table" style="width: 100%;">
+						<thead>
+							<tr>
+								<th>구매자</th>
+								<th>구매날짜</th>
+							</tr>
+						</thead>	
+						<tbody>
+							<tr>
+								<td>
+									${userinfo.id }/${userinfo.name }
+								</td>
+								<td>
+									${orderList.orderdate }
+								</td>
+							</tr>
+						</tbody>					
+					</table>	
+				</div>	
+			</div>
 			<div class="row">
 			<font size="4pt">ORDER LIST</font>
 			</div>

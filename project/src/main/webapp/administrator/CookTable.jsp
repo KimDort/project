@@ -289,6 +289,9 @@
 												data-target="#cookingadd">
 										</div>
 										<form id="frm" enctype="multipart/form-data" method="post" action="./Cook/Create">
+										<input type="hidden" name="page" value="${pageMaker.cri.page }">
+											<input type="hidden" name="perPageNum" value="${pageMaker.cri.perPageNum }">
+											<input type="hidden" name="url" value="CookTable">
 											<!-- 모달 시작 -->
 											<div class="modal fade" id="cookingadd" role="dialog">
 												<div class="modal-dialog modal-lg">

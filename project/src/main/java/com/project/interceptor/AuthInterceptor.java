@@ -26,6 +26,9 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 			saveDest(request);
 			response.sendRedirect("/member/signin");
 			return false;
+		}else{
+			saveParm(request);
+			System.out.println("로그인 후 요청 메소드"+request.getMethod());
 		}
 		/*
 		 * if(request.getSession().getAttribute("tno")==null){
@@ -36,11 +39,40 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 		 */
 		return true;
 	}
-
-	private void saveDest(HttpServletRequest req) {
-		String uri = req.getRequestURI();
+	private void saveParm(HttpServletRequest req){		
 		Enumeration<String> paramNames = req.getParameterNames();
 		if (paramNames != null) {
+			while (paramNames.hasMoreElements()) {
+				String tno[] = null;
+				String orderStock[] = null;
+				String sno = null;
+				String key = (String) paramNames.nextElement();
+				if (key.equals("tno")) {
+					tno = req.getParameterValues(key);
+					req.getSession().setAttribute("tno", tno);
+				}
+				if (key.equals("orderStock")) {
+					orderStock = req.getParameterValues(key);
+					req.getSession().setAttribute("orderStock", orderStock);
+				}
+				if (key.equals("sno")) {
+					sno = req.getParameter("sno");
+					req.getSession().setAttribute("sno", sno);
+				}
+			}
+		} 
+	}
+	private void saveDest(HttpServletRequest req) {
+		String uri = req.getRequestURI();
+		
+		req.getSession().setAttribute("dest", uri);
+		
+		//Enumeration<String> paramNames = req.getParameterNames();
+		saveParm(req);
+		if (req.getMethod().equals("POST")) {
+			req.getSession().setAttribute("dest", uri);
+		}
+		/*if (paramNames != null) {
 			while (paramNames.hasMoreElements()) {
 				String tno[] = null;
 				String orderStock[] = null;
@@ -66,19 +98,12 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 			if (req.getMethod().equals("POST")) {
 				req.getSession().setAttribute("dest", uri);
 			}
-		}
+		}*/
 	}
 
 	@Override
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
-			throws Exception {
-		if (request.getSession().getAttribute("tno") == null && request.getSession().getAttribute("MemberVO") == null) {
-			response.setContentType("text/html; charset=UTF-8");
-			PrintWriter out = response.getWriter();
-			out.println(
-					"<script>alert('잘못 된 접근 경로 입니다.'); location.href='http://happyrecipek.iptime.org:9090';</script>");
-			out.flush();
-		}
+			throws Exception {		
 	}
 
 }

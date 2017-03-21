@@ -75,7 +75,9 @@ public class LoginInterceptor2 extends HandlerInterceptorAdapter {
 			PrintWriter out = response.getWriter();
 			out.println("<script>alert('아이디 또는 암호가 틀렸습니다.');history.back();</script>");
 			out.flush();	
-		}		
+		}else if(dest==null){
+			response.sendRedirect("/");
+		}
 	}
 
 	@Override
